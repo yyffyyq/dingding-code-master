@@ -1,21 +1,29 @@
 package com.example.backend.service.impl;
 
+import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.util.StrUtil;
 import com.example.backend.exception.BusinessException;
 import com.example.backend.exception.ErrorCode;
 import com.example.backend.exception.ThrowUtils;
 import com.example.backend.mapper.SysUserMapper;
+import com.example.backend.model.dto.SysUserQueryRequest;
+import com.example.backend.model.dto.SysUserUpdateQueryReqyest;
 import com.example.backend.model.entity.SysUser;
 import com.example.backend.model.vo.SysUserVO;
 import com.example.backend.service.SysUserService;
+import com.mybatisflex.core.query.QueryWrapper;
 import com.mybatisflex.spring.service.impl.ServiceImpl;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.BeanUtils;
-import org.springframework.cglib.core.Local;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import static com.example.backend.constant.UserConstant.USER_LOGIN_STATE;
 
@@ -29,6 +37,12 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser>  imp
 
     @Resource
     private SysUserMapper sysUserMapper;
+
+    // 线程安全的Map，存储：用户ID -> 是否存在（缓存5分钟）
+    private final ConcurrentHashMap<Long, CacheObject > userIdExistCache = new ConcurrentHashMap<>();
+    // 缓存过期时间：5分钟（防止内存溢出，也防止脏数据）
+    private static final long EXPIRE_TIME = TimeUnit.MINUTES.toMillis(2);
+
 
 
     /**
@@ -157,5 +171,114 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser>  imp
 
         // 返回是否清除成功请求
         return "退出成功";
+    }
+
+    /**
+     * 生成并凭借sql查询语句
+     * @param sysUserQueryRequest 分页查询请求
+     * @return
+     */
+    @Override
+    public QueryWrapper getQueryWrapper(SysUserQueryRequest sysUserQueryRequest) {
+
+        ThrowUtils.throwIf(sysUserQueryRequest == null, ErrorCode.PARAMS_ERROR);
+
+        Long id = sysUserQueryRequest.getId();
+        String nickName = sysUserQueryRequest.getNickName();
+        String userRole = sysUserQueryRequest.getUserRole();
+        String sortField = sysUserQueryRequest.getSortField();
+        String sortOrder = sysUserQueryRequest.getSortOrder();
+        QueryWrapper queryWrapper = QueryWrapper.create()
+                .eq("id", id, id != null && id > 0)
+                .eq("user_role", userRole, StrUtil.isNotBlank(userRole))
+                .like("nick_name", nickName, StrUtil.isNotBlank(nickName));
+        if (StrUtil.isNotBlank(sortField)) {
+            queryWrapper.orderBy(sortField, "ascend".equals(sortOrder));
+        }
+
+        return queryWrapper;
+    }
+
+    /**
+     * 封装系统用户列表
+     * @param records 需要封装的列表
+     * @return 分装后列表
+     */
+    @Override
+    public List<SysUserVO> getUserVoList(List<SysUser> records) {
+
+        if(CollUtil.isEmpty(records)){
+            return new ArrayList<>();
+        }
+        //landa表达式
+        return records.stream()
+                .map(this::getSysUserVO)
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * 更新系统用户权限
+     * @param sysUserUpdateQueryReqyest
+     * @return
+     */
+    @Override
+    public Boolean updateRoleById(SysUserUpdateQueryReqyest sysUserUpdateQueryReqyest) {
+
+        ThrowUtils.throwIf(sysUserUpdateQueryReqyest == null, ErrorCode.PARAMS_ERROR);
+
+        // 获取id用于后续更新
+        Long id = sysUserUpdateQueryReqyest.getId();
+
+        // 缓存判断是否已经查询过数据库，如果是，并且为错误id就直接返回
+        boolean isExist = checkUserExist(id);
+        if (!isExist) {
+            return false;
+        }
+
+        Boolean result = sysUserMapper.updateById(sysUserUpdateQueryReqyest);
+
+        // 清除缓存确保数据干净
+        userIdExistCache.remove(id);
+
+        return result;
+    }
+
+
+    /**
+     * 根据id进入缓存查看
+     * @param id
+     * @return
+     */
+    private boolean checkUserExist(Long id) {
+        long now = System.currentTimeMillis();
+        CacheObject cacheObject = userIdExistCache.get(id);
+
+        // 情况1：缓存存在 且 未过期 → 直接返回缓存结果
+        if (cacheObject != null && now < cacheObject.expireTime) {
+            return cacheObject.exist;
+        }
+
+        // 情况2：缓存不存在/已过期 → 查询数据库
+        boolean exist = sysUserMapper.selectCountById(id) > 0;
+
+        // 存入缓存，设置过期时间
+        userIdExistCache.put(id, new CacheObject(exist, now + EXPIRE_TIME));
+
+        return exist;
+    }
+
+    /**
+     * 缓存对象：存储是否存在 + 过期时间
+     */
+    private static class CacheObject {
+        // 用户是否存在
+        boolean exist;
+        // 缓存过期时间戳
+        long expireTime;
+
+        public CacheObject(boolean exist, long expireTime) {
+            this.exist = exist;
+            this.expireTime = expireTime;
+        }
     }
 }

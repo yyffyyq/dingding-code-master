@@ -32,3 +32,11 @@ export async function logout(options?: { [key: string]: any }) {
     ...(options || {}),
   });
 }
+
+/** 此处后端没有提供注释 GET /dingUser/test */
+export async function test(options?: { [key: string]: any }) {
+  return request<string>("/dingUser/test", {
+    method: "GET",
+    ...(options || {}),
+  });
+}

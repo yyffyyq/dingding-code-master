@@ -1,9 +1,14 @@
 package com.example.backend.service;
 
+import com.example.backend.model.dto.SysUserQueryRequest;
+import com.example.backend.model.dto.SysUserUpdateQueryReqyest;
 import com.example.backend.model.entity.SysUser;
 import com.example.backend.model.vo.SysUserVO;
+import com.mybatisflex.core.query.QueryWrapper;
 import com.mybatisflex.core.service.IService;
 import jakarta.servlet.http.HttpServletRequest;
+
+import java.util.List;
 
 /**
  *  服务层。
@@ -40,4 +45,21 @@ public interface SysUserService extends IService<SysUser> {
      * @return 是否退出成功
      */
     String logoutUser(HttpServletRequest request);
+
+    /**
+     * 用户分页sql查询语句生成
+     * @param sysUserQueryRequest 分页查询请求
+     * @return 组合好的sql查询语句
+     */
+    QueryWrapper getQueryWrapper(SysUserQueryRequest sysUserQueryRequest);
+
+    /**
+     * 封装系统用户列表
+     * @param records 需要封装的列表
+     * @return 封装后系统用户信息
+     */
+    List<SysUserVO> getUserVoList(List<SysUser> records);
+
+
+    Boolean updateRoleById(SysUserUpdateQueryReqyest sysUserUpdateQueryReqyest);
 }

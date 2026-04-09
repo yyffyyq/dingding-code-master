@@ -1,24 +1,26 @@
-package com.example.backend.model.vo;
+package com.example.backend.model.dto;
 
+import com.example.backend.common.PageRequest;
 import com.mybatisflex.annotation.Id;
 import com.mybatisflex.annotation.KeyType;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
-import java.io.Serial;
 import java.io.Serializable;
+import java.time.LocalDateTime;
 
+/**
+ * 系统用户查询请求
+ */
+@EqualsAndHashCode(callSuper = true)
 @Data
-public class SysUserVO implements Serializable {
+public class SysUserQueryRequest extends PageRequest implements Serializable {
 
-    @Serial
-    private static final long serialVersionUID = 1L;
 
     /**
      * 主键ID
      */
-    @Id(keyType = KeyType.Auto)
     private Long id;
-
 
     /**
      * 用户昵称
@@ -30,9 +32,10 @@ public class SysUserVO implements Serializable {
      */
     private String userRole;
 
-
     /**
      * 用户头像
      */
     private String avarUrl;
+
+    private static final long serialVersionUID = 1L;
 }

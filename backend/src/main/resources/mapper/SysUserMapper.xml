@@ -18,4 +18,18 @@
             (union_id,user_id,nick_name,user_role,create_time,avar_url)
         values (#{unionId},#{userId},#{nickName},#{userRole},#{createTime},#{avarUrl})
     </insert>
+
+    <update id="updateById" parameterType="com.example.backend.model.dto.SysUserUpdateQueryReqyest">
+        update sys_user
+        <set>
+            <if test="userRole != null and userRole != ''">
+            user_role = #{userRole},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <select id="selectCountById" parameterType="Long" resultType="int">
+        select count(*) from sys_user where id = #{id}
+    </select>
 </mapper>

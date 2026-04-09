@@ -1,5 +1,6 @@
 package com.example.backend.mapper;
 
+import com.example.backend.model.dto.SysUserUpdateQueryReqyest;
 import com.example.backend.model.entity.SysUser;
 import com.mybatisflex.core.BaseMapper;
 
@@ -18,4 +19,18 @@ public interface SysUserMapper extends BaseMapper<SysUser> {
      * @return
      */
     Long insertSysuer(SysUser sysUser);
+
+    /**
+     * 根据系统用户id更新权限
+     * @param sysUserUpdateQueryReqyest
+     * @return
+     */
+    Boolean updateById(SysUserUpdateQueryReqyest sysUserUpdateQueryReqyest);
+
+    /**
+     * 查询系统用户数量根据id
+     * @param id
+     * @return
+     */
+    int selectCountById(Long id);
 }
