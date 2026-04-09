@@ -1,0 +1,13 @@
+/* 正确的全局样式 */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box; /* 统一盒模型，避免边距溢出 */
+}
+
+/* 让根元素占满整个浏览器视口 */
+html, body, #app {
+  height: 100%;
+  width: 100%;
+  overflow-x: hidden; /* 可选：去掉横向滚动条 */
+}

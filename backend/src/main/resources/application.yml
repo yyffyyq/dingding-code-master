@@ -1,0 +1,23 @@
+server:
+  port: 8080
+spring:
+  application:
+    name: management-backed
+  profiles:
+    active: dev
+
+# springdoc-openapi
+springdoc:
+  group-configs:
+    - group: 'default'
+      packages-to-scan: com.example.backend.controller
+
+# knife4j
+knife4j:
+  enable: true
+  setting:
+    language: zh_cn
+
+mybatis:
+  configuration:
+    map-underscore-to-camel-case: true  # 自动转换下划线<->驼峰

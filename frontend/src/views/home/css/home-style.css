@@ -1,0 +1,21 @@
+.home-root {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 60vh;
+}
+.home-banner {
+  background: #f0f4fa;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  padding: 40px 60px;
+  min-width: 340px;
+  text-align: center;
+}
+.home-banner h2 {
+  margin-bottom: 18px;
+}
+.home-banner p {
+  color: #666;
+  font-size: 15px;
+}

@@ -1,0 +1,18 @@
+.main-nav {
+  background: #2d8cf0;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+}
+.main-nav ul {
+  display: flex;
+  justify-content: center;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* 修改了这里的悬停/激活反馈 */
+.main-nav li.active,
+.main-nav li:hover {
+  background: #ffffff;
+  color: #2d8cf0; /* 将文字颜色变为主题蓝，避免白底白字看不见 */
+}

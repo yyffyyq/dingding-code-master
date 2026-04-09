@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.backend.mapper.SysUserMapper">
+
+    <select id="selectOneBySysUser" parameterType="com.example.backend.model.entity.SysUser" resultType="com.example.backend.model.entity.SysUser">
+        select * from sys_user
+        <where>
+            <if test = "unionId != null">
+                union_id = #{unionId}
+            </if>
+        </where>
+    </select>
+
+    <insert id="insertSysuer" useGeneratedKeys="true" keyProperty="id" parameterType="com.example.backend.model.entity.SysUser">
+        insert into sys_user
+            (union_id,user_id,nick_name,user_role,create_time,avar_url)
+        values (#{unionId},#{userId},#{nickName},#{userRole},#{createTime},#{avarUrl})
+    </insert>
+</mapper>

@@ -1,0 +1,24 @@
+.user-info-root {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 60vh;
+}
+.user-info-card {
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  padding: 32px 48px;
+  min-width: 320px;
+}
+.user-info-card h2 {
+  margin-bottom: 24px;
+}
+.user-info-card ul {
+  list-style: none;
+  padding: 0;
+}
+.user-info-card li {
+  margin-bottom: 12px;
+  font-size: 16px;
+}

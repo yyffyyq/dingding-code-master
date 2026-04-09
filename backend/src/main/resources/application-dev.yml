@@ -1,0 +1,18 @@
+spring:
+  # mysql
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/kaoqindb
+    username: root
+    password: jintuyfy
+
+dingtalk:
+  corpId: ding929qmi3qamdahca1
+  ssoSecret: KCUWb3jZwzafOxUt6K2uorXpYnLT3mXRayEq_rZqqhHWT5jzZuL9rC0WWthccivd
+  getToken: https://api.dingtalk.com/v1.0/oauth2/accessToken
+
+  # 新增：获取用户级别的token
+  getUserTokenUrl: https://api.dingtalk.com/v1.0/oauth2/userAccessToken
+  # 新增：获取当前登录用户信息
+  getUserInfoUrl: https://api.dingtalk.com/v1.0/contact/users/me
+debug: true
