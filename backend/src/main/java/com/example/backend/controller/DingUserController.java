@@ -89,7 +89,7 @@ public class DingUserController {
             // 使用 union_id 换取企业内的 user_id
             try {
                 // 调用 Controller 获取【应用级】Token
-                ResponseEntity<Map<String, Object>> appTokenRes = dingTalkController.getDingTalkAccessToken();
+                ResponseEntity<Map<String, Object>> appTokenRes = dingTalkController.getDingTalkAccessToken(request);
                 Map<String, Object> appTokenBody = appTokenRes.getBody();
 
                 // 判断token是否为空

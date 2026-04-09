@@ -2,6 +2,7 @@ package com.example.backend.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.annotation.Resource;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.*;
@@ -18,8 +19,12 @@ import com.aliyun.teautil.models.RuntimeOptions;
 import com.example.backend.common.ApiResponse;
 import org.springframework.web.client.RestTemplate;
 
+import java.net.http.HttpResponse;
 import java.util.HashMap;
 import java.util.Map;
+
+import static com.example.backend.constant.CommonConstant.ACCSEE_TOKEN;
+import static com.example.backend.constant.UserConstant.USER_LOGIN_STATE;
 
 @Slf4j
 @CrossOrigin
@@ -46,7 +51,7 @@ public class Controller {
     @GetMapping("/dingtalk/token")
     @Cacheable(value = "dingTalkTokenCache", key = "'dingTalkToken'", cacheManager = "cacheManager")
     @Operation(summary = "获取钉钉token" ,description = "获取钉钉token用于后续获取其他信息")
-    public ResponseEntity<Map<String, Object>> getDingTalkAccessToken() {
+    public ResponseEntity<Map<String, Object>> getDingTalkAccessToken(HttpServletRequest request) {
         Map<String, Object> resultMap = new HashMap<>();
         try {
             log.info("开始调用钉钉接口获取accessToken，appKey: {}", appKey);
@@ -86,6 +91,11 @@ public class Controller {
             resultMap.put("success", true);
             resultMap.put("accessToken", accessToken);
             resultMap.put("expireIn", expireIn);
+
+            // 清理 request 里的 access_token,再存入最新
+            request.getSession().removeAttribute(ACCSEE_TOKEN);
+            request.setAttribute(ACCSEE_TOKEN, accessToken);
+
             return ResponseEntity.ok(resultMap);
 
         } catch (Exception e) {
