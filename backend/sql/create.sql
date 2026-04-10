@@ -1,5 +1,5 @@
 use kaoqindb;
-CREATE TABLE `group` (
+CREATE TABLE `group_kaoqin` (
                          `id` BIGINT NOT NULL AUTO_INCREMENT COMMENT '主键ID',
                          `group_id` VARCHAR(64) NOT NULL COMMENT '考勤组编号 (钉钉groupId)',
                          `group_name` VARCHAR(128) DEFAULT NULL COMMENT '考勤组名字',
@@ -23,8 +23,8 @@ CREATE TABLE `user_kaoqin` (
 
 CREATE TABLE `attendance_record` (
                                      `id` BIGINT NOT NULL AUTO_INCREMENT COMMENT '主键ID',
-                                     `group_id` VARCHAR(64) NOT NULL COMMENT '考勤组编号 (关联 group.group_id)',
-                                     `user_id` VARCHAR(64) NOT NULL COMMENT '用户编号 (关联 user.user_id)',
+                                     `group_id` VARCHAR(64) NOT NULL COMMENT '考勤组编号 (关联 group_kaoqin.group_id)',
+                                     `user_id` VARCHAR(64) NOT NULL COMMENT '用户编号 (关联 user_kaoqin.user_id)',
                                      `work_date` DATE NOT NULL COMMENT '排班/工作日日期 (如 2020-09-06)',
                                      `check_time` DATETIME DEFAULT NULL COMMENT '实际打卡时间',
                                      `status` VARCHAR(32) NOT NULL COMMENT '打卡情况 (如: Normal-正常, NotSigned-缺卡, Repaired-补卡等)',
@@ -40,6 +40,9 @@ CREATE TABLE `attendance_record` (
 ALTER TABLE `attendance_record`
     ADD CONSTRAINT `fk_attendance_user`
         FOREIGN KEY (`user_id`) REFERENCES `user_kaoqin` (`user_id`);
+ALTER TABLE `attendance_record`
+    ADD CONSTRAINT `fk_attendance_group`
+        FOREIGN KEY (`group_id`) REFERENCES `group_kaoqin` (`group_id`);
 
 CREATE TABLE `sys_user` (
                             `id` BIGINT AUTO_INCREMENT PRIMARY KEY COMMENT '主键ID',

@@ -19,7 +19,7 @@
         values (#{unionId},#{userId},#{nickName},#{userRole},#{createTime},#{avarUrl})
     </insert>
 
-    <update id="updateById" parameterType="com.example.backend.model.dto.SysUserUpdateQueryReqyest">
+    <update id="updateById" parameterType="com.example.backend.model.dto.sysUser.SysUserUpdateQueryReqyest">
         update sys_user
         <set>
             <if test="userRole != null and userRole != ''">

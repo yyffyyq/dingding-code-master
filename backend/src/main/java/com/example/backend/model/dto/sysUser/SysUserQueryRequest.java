@@ -1,13 +1,10 @@
-package com.example.backend.model.dto;
+package com.example.backend.model.dto.sysUser;
 
 import com.example.backend.common.PageRequest;
-import com.mybatisflex.annotation.Id;
-import com.mybatisflex.annotation.KeyType;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
 
 /**
  * 系统用户查询请求

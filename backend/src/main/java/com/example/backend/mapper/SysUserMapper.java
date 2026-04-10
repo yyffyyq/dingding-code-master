@@ -1,6 +1,6 @@
 package com.example.backend.mapper;
 
-import com.example.backend.model.dto.SysUserUpdateQueryReqyest;
+import com.example.backend.model.dto.sysUser.SysUserUpdateQueryReqyest;
 import com.example.backend.model.entity.SysUser;
 import com.mybatisflex.core.BaseMapper;
 

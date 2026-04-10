@@ -1,4 +1,4 @@
-package com.example.backend.model.vo;
+package com.example.backend.model.vo.sysUservo;
 
 import com.mybatisflex.annotation.Id;
 import com.mybatisflex.annotation.KeyType;

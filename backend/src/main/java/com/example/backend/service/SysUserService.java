@@ -1,9 +1,9 @@
 package com.example.backend.service;
 
-import com.example.backend.model.dto.SysUserQueryRequest;
-import com.example.backend.model.dto.SysUserUpdateQueryReqyest;
+import com.example.backend.model.dto.sysUser.SysUserQueryRequest;
+import com.example.backend.model.dto.sysUser.SysUserUpdateQueryReqyest;
 import com.example.backend.model.entity.SysUser;
-import com.example.backend.model.vo.SysUserVO;
+import com.example.backend.model.vo.sysUservo.SysUserVO;
 import com.mybatisflex.core.query.QueryWrapper;
 import com.mybatisflex.core.service.IService;
 import jakarta.servlet.http.HttpServletRequest;

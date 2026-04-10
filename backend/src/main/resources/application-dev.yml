@@ -15,4 +15,12 @@ dingtalk:
   getUserTokenUrl: https://api.dingtalk.com/v1.0/oauth2/userAccessToken
   # 新增：获取当前登录用户信息
   getUserInfoUrl: https://api.dingtalk.com/v1.0/contact/users/me
+
+  # 获取简单考勤组信息，通过accesstoken
+  getSimpleGroupInfo: https://oapi.dingtalk.com/topapi/attendance/getsimplegroups
+
+  # 获取考勤组用户id列表
+  getMemberIdList: https://oapi.dingtalk.com/topapi/attendance/group/memberusers/list
+
+
 debug: true

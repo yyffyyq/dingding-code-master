@@ -9,7 +9,7 @@ import com.example.backend.exception.ErrorCode;
 import com.example.backend.exception.ThrowUtils;
 import com.example.backend.model.entity.SysUser;
 import com.example.backend.model.eum.UserRoleEnum;
-import com.example.backend.model.vo.SysUserVO;
+import com.example.backend.model.vo.sysUservo.SysUserVO;
 import com.example.backend.service.SysUserService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.annotation.Resource;
@@ -20,7 +20,6 @@ import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
-import javax.xml.transform.Result;
 import java.util.HashMap;
 import java.util.Map;
 

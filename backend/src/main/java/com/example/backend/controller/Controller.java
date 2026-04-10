@@ -94,7 +94,7 @@ public class Controller {
 
             // 清理 request 里的 access_token,再存入最新
             request.getSession().removeAttribute(ACCSEE_TOKEN);
-            request.setAttribute(ACCSEE_TOKEN, accessToken);
+            request.getSession().setAttribute(ACCSEE_TOKEN, accessToken);
 
             return ResponseEntity.ok(resultMap);
 

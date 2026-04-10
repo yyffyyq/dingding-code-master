@@ -24,8 +24,17 @@ public enum ErrorCode {
     SYS_USER_SCAN_LOGIN_PARAMS_ERROR(60003,"authCode不能为空"),
     SYS_USER_GET_USER_ACESS_TOKEN_FAIL_ERROR(60004,"获取钉钉userAccessToken失败"),
     SYS_USER_SCAN_LOGIN_ERROR(60005,"钉钉扫码登录异常"),
-    SYS_USER_COMMONG_ERROR(60500, "通用报错");
+    SYS_USER_COMMONG_ERROR(60500, "系统用户通用报错"),
 
+
+    /**
+     * 系统用户登录相关异常
+     * 代码范围: 60501-70000
+     */
+    GROUP_KAOQIN_GET_ERROR(70001,"获取考勤组失败"),
+    GROUP_KAOQIN_GET_API_ERROR(70002,"调用钉钉API获取考勤组失败"),
+    GROUP_KAOQIN_VO_LOGIN_PARAMS_ERROR(70003, "考勤组封装对象为空"),
+    GROUP_KAOQIN_COMMONG_ERROR(70000, "考勤组通用报错");
 
 
 

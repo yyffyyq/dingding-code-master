@@ -6,17 +6,16 @@ import com.example.backend.common.ResultUtils;
 import com.example.backend.constant.UserConstant;
 import com.example.backend.exception.ErrorCode;
 import com.example.backend.exception.ThrowUtils;
-import com.example.backend.model.dto.SysUserQueryRequest;
-import com.example.backend.model.dto.SysUserUpdateQueryReqyest;
+import com.example.backend.model.dto.sysUser.SysUserQueryRequest;
+import com.example.backend.model.dto.sysUser.SysUserUpdateQueryReqyest;
 import com.example.backend.model.entity.SysUser;
-import com.example.backend.model.vo.SysUserVO;
+import com.example.backend.model.vo.sysUservo.SysUserVO;
 import com.example.backend.service.SysUserService;
 import com.mybatisflex.core.paginate.Page;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import javax.xml.transform.Result;
 import java.util.List;
 
 /**
