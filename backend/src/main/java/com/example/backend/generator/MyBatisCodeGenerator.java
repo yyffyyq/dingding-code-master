@@ -10,7 +10,7 @@ import java.util.Map;
 
 public class MyBatisCodeGenerator {
     //需要生成的表名
-    private static final String[] TABLE_NAMES={"user_kaoqin"};
+    private static final String[] TABLE_NAMES={"user_group_kaoqin_rel"};
 
     public static void main(String[] args) {
         //先获取主配置配置文件启动的开发环境配置

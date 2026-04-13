@@ -4,4 +4,11 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.example.backend.mapper.UserKaoqinMapper">
 
+    <delete id="deleteBatchByUserIds">
+        DELETE FROM user_kaoqin
+        WHERE user_id IN
+        <foreach collection="userIds" item="userId" open="(" separator="," close=")">
+            #{userId}
+        </foreach>
+    </delete>
 </mapper>

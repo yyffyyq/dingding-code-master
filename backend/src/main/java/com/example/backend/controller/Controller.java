@@ -1,5 +1,6 @@
 package com.example.backend.controller;
 
+import com.example.backend.service.DingUserService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
@@ -39,6 +40,9 @@ public class Controller {
     @Value("${dingtalk.getToken}")
     private String DING_TALK_TOKEN_URL;
 
+    @Resource
+    private DingUserService dingUserService;
+
     // Spring自带的HTTP请求工具
     @Resource
     private RestTemplate restTemplate;
@@ -54,43 +58,10 @@ public class Controller {
     public ResponseEntity<Map<String, Object>> getDingTalkAccessToken(HttpServletRequest request) {
         Map<String, Object> resultMap = new HashMap<>();
         try {
-            log.info("开始调用钉钉接口获取accessToken，appKey: {}", appKey);
+            resultMap = dingUserService.getDingTalkUserInfo();
 
-            // 1. 构造请求头
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.APPLICATION_JSON);
-
-            // 2. 构造请求体（自建应用仅需这两个参数！）
-            Map<String, String> requestBody = new HashMap<>();
-            requestBody.put("appKey", appKey);
-            requestBody.put("appSecret", appSecret);
-
-            // 3. 发送POST请求
-            HttpEntity<Map<String, String>> requestEntity = new HttpEntity<>(requestBody, headers);
-            ResponseEntity<Map> responseEntity = restTemplate.exchange(
-                    DING_TALK_TOKEN_URL,
-                    HttpMethod.POST,
-                    requestEntity,
-                    Map.class
-            );
-
-            // 4. 解析返回结果
-            Map<String, Object> responseBody = responseEntity.getBody();
-            if (responseBody == null || !responseBody.containsKey("accessToken")) {
-                log.error("钉钉获取token失败，响应结果: {}", responseBody);
-                resultMap.put("success", false);
-                resultMap.put("msg", "获取钉钉Token失败");
-                return ResponseEntity.ok(resultMap);
-            }
-
-            // 5. 返回成功数据
-            String accessToken = (String) responseBody.get("accessToken");
-            Integer expireIn = (Integer) responseBody.get("expireIn");
-            log.info("钉钉获取token成功，有效期: {}秒", expireIn);
-
-            resultMap.put("success", true);
-            resultMap.put("accessToken", accessToken);
-            resultMap.put("expireIn", expireIn);
+            // 获取access_token用于存入session中
+            String accessToken = resultMap.get("accessToken").toString();
 
             // 清理 request 里的 access_token,再存入最新
             request.getSession().removeAttribute(ACCSEE_TOKEN);
@@ -105,4 +76,5 @@ public class Controller {
             return ResponseEntity.ok(resultMap);
         }
     }
+
 }

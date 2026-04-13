@@ -1,6 +1,7 @@
 package com.example.backend.service;
 
 import com.example.backend.model.dto.UserKaoqinDTO;
+import com.example.backend.model.entity.SysUser;
 import com.mybatisflex.core.service.IService;
 import com.example.backend.model.entity.UserKaoqin;
 
@@ -14,5 +15,14 @@ import java.util.List;
 public interface UserKaoqinService extends IService<UserKaoqin> {
 
 
-    Integer insertGroupList(List<UserKaoqinDTO> resultList);
+    String insertGroupList(List<UserKaoqinDTO> resultList,String group_id);
+
+    /**
+     * 通过考勤组id获取用户id列表通用方法
+     * @param groupId
+     * @param accessToken
+     * @param userId
+     * @return
+     */
+    List<UserKaoqinDTO> getMemeberListId(String groupId, String accessToken, String userId);
 }

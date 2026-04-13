@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.backend.mapper.UserGroupKaoqinRelMapper">
+
+    <delete id="deleteBatchByids">
+        DELETE FROM user_group_kaoqin_rel
+        WHERE id IN
+        <foreach collection="relIdList" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

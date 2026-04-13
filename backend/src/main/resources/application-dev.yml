@@ -21,6 +21,11 @@ dingtalk:
 
   # 获取考勤组用户id列表
   getMemberIdList: https://oapi.dingtalk.com/topapi/attendance/group/memberusers/list
-
+  app:
+    client-id: ding929qmi3qamdahca1
+    client-secret: KCUWb3jZwzafOxUt6K2uorXpYnLT3mXRayEq_rZqqhHWT5jzZuL9rC0WWthccivd
 
 debug: true
+
+# 事件订阅服务
+
