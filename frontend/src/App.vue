@@ -7,7 +7,7 @@
 
 <script setup lang="ts">
 import Layout from './layout/index.vue';
-import { userLoginUserStore} from "@/stors/loginUser.ts";
+import { userLoginUserStore} from "@/stores/login-user.ts";
 
 const loginUserStore = userLoginUserStore()
 loginUserStore.fetchLoginUser()

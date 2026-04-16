@@ -11,8 +11,8 @@
 
 <script setup lang="ts">
 // 保持你原有的组件导入即可
-import Head from './components/Head/index.vue';
-import Foot from './components/Foot/index.vue';
+import Head from './components/AppHeader/index.vue';
+import Foot from './components/AppFooter/index.vue';
 
 </script>
 

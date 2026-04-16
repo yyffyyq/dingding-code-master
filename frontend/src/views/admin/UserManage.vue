@@ -55,7 +55,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
-import { sysUserListpage, update } from '@/api/sysUserController'; // 引入新接口
+import { sysUserListpage, update } from '@/api/modules/sys-user';
 import { ElMessage } from 'element-plus';
 
 const users = ref<any[]>([]);
