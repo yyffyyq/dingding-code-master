@@ -104,6 +104,7 @@ public class GroupKaoqinServiceImpl extends ServiceImpl<GroupKaoqinMapper, Group
         String sortOrder = groupKaoqinQuertRequest.getSortOrder();
         QueryWrapper queryWrapper = QueryWrapper.create()
                 .eq("group_id", groupId, StrUtil.isNotBlank(groupId))
+                .eq("is_deleted", 0)
                 .like("group_name", groupName, StrUtil.isNotBlank(groupName));
         if (StrUtil.isNotBlank(sortField)) {
             queryWrapper.orderBy(sortField, "ascend".equals(sortOrder));
