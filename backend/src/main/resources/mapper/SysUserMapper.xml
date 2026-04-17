@@ -19,6 +19,7 @@
         values (#{unionId},#{userId},#{nickName},#{userRole},#{createTime},#{avarUrl})
     </insert>
 
+    <!--根据系统用户id更新权限-->
     <update id="updateById" parameterType="com.example.backend.model.dto.sysUser.SysUserUpdateQueryReqyest">
         update sys_user
         <set>

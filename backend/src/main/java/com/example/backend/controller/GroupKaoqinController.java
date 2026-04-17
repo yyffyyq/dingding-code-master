@@ -36,7 +36,7 @@ import java.util.Map;
 import static com.example.backend.constant.CommonConstant.ACCSEE_TOKEN;
 
 /**
- *  控制层。
+ *  考勤组功能部分-控制层。
  *
  * @author <a href="https://github.com/yyffyyq">代码制造者yfy</a>
  */
@@ -63,27 +63,29 @@ public class GroupKaoqinController {
      * @return 返回更新插入的数量
      * @throws JsonProcessingException request请求为空抛出/钉钉返回code不为 0 抛出官方提示报错/ 未知报错，抛出通用报错
      */
+    // todo 这里之后可以做一个省api调用的优化，
+    //  判断是否有更新再决定是否需要更新数据库的考勤组
     @GetMapping("/get/simplegroup")
     @Operation(summary = "更新最新的考勤组情况")
     @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
     public BaseResponse<Integer> getSimpleGroup(HttpServletRequest request) throws JsonProcessingException {
 
+        // 1. 判断http请求是否为空
         ThrowUtils.throwIf(request == null , ErrorCode.PARAMS_ERROR);
 
-        // 拿到token请求，为了之后获取考勤组做准备
+        // 2. 通过http请求的session拿到钉钉的access_token，为了之后获取考勤组做准备
         Object accessTokenobj =  request.getSession().getAttribute(ACCSEE_TOKEN);;
         String accessToken = (String) accessTokenobj;
-        // 拼接 钉钉API 请求，并调用请求获取数据进行处理
-        String dingAPI = getSimpleGroupInfo+"?access_token="+accessToken;
 
+        // 3. 拼接 钉钉API 请求，并调用请求获取数据进行处理
+        String dingAPI = getSimpleGroupInfo+"?access_token="+accessToken;
         // 构建请求钉钉 api 请求体
         Map<String, Object> requestBody = new HashMap<>();
         requestBody.put("offset", 0); // 从第 0 条开始
         requestBody.put("size", 10);  // 最大取 10 条
 
-        // 调用 钉钉API 请求并存入数据库
         try {
-
+            // 4. 调用 钉钉API 请求并存入数据库
             // 拿到原始 json 数据，为后续处理数据做准备
             ResponseEntity<String> responseEntity = restTemplate.postForEntity(dingAPI, requestBody, String.class);
             String rawJsonResult = responseEntity.getBody();
@@ -121,33 +123,39 @@ public class GroupKaoqinController {
         }
     }
 
-    // 展示 group_kaoqin 表列表，让用户可以控制是否上线
-
     /**
      * 考勤组分页查询
      * @param groupKaoqinQuertRequest 分页查询请求
      * @param request http请求
      * @return 分页信息
-     * @throws JsonProcessingException http请求为空抛出/
+     * @throws BusinessException http请求为空抛出/分页查询请求页码或页数为空抛出
      */
     @PostMapping("/get/list/groups")
     @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
     public BaseResponse<Page<GroupKaoqinVO>> getGroupList(@RequestBody GroupKaoqinQuertRequest groupKaoqinQuertRequest
             , HttpServletRequest request) throws JsonProcessingException {
 
+        // 1. 判断考勤组分页查询请求是否为空
         ThrowUtils.throwIf(request == null , ErrorCode.PARAMS_ERROR);
+
+        // 2. 获取页码信息，并判断是否为空
         long pageNum = groupKaoqinQuertRequest.getPageNum();
         long pageSize = groupKaoqinQuertRequest.getPageSize();
+        if(pageSize <= 0 || pageNum <= 0){
+            throw new BusinessException(ErrorCode.PARAMS_ERROR,"考勤组分页查询，分页或页码为空");
+        }
 
+        // 3. 调用方法获取未封装的查询到的信息
         Page<GroupKaoqin> groupKaoqinPage = groupKaoqinService.page(Page.of(pageNum, pageSize),
                 groupKaoqinService.getQueryWrapper(groupKaoqinQuertRequest));
 
-        // 数据脱敏
+        // 4. 数据封装脱敏
         Page<GroupKaoqinVO> groupKaoqinVOPage = new Page<>(pageNum, pageSize, groupKaoqinPage.getTotalRow());
         List<GroupKaoqinVO> groupKaoqinVOList = groupKaoqinService.getGrouKaoqinList(groupKaoqinPage.getRecords());
 
         groupKaoqinVOPage.setRecords(groupKaoqinVOList);
 
+        // 5. 返回分页信息给前端
         return ResultUtils.success(groupKaoqinVOPage);
     }
 

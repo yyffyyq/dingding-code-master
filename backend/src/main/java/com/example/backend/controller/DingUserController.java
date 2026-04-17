@@ -197,7 +197,7 @@ public class DingUserController {
         userHeaders.setContentType(MediaType.APPLICATION_JSON);
         userHeaders.set("x-acs-dingtalk-access-token", userAccessToken);
 
-        // todo这一块是干嘛的？
+        // 构造钉钉api请求并执行
         HttpEntity<String> userEntity = new HttpEntity<>(null, userHeaders);
         ResponseEntity<Map> userResponse = restTemplate.exchange(
                 getUserInfoUrl,

@@ -224,28 +224,30 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser>  imp
     @Override
     public Boolean updateRoleById(SysUserUpdateQueryReqyest sysUserUpdateQueryReqyest) {
 
+        // 1. 判断更新系统用户权限请求是否为空
         ThrowUtils.throwIf(sysUserUpdateQueryReqyest == null, ErrorCode.PARAMS_ERROR);
 
-        // 获取id用于后续更新
+        // 2. 获取id用于后续更新
         Long id = sysUserUpdateQueryReqyest.getId();
 
-        // 缓存判断是否已经查询过数据库，如果是，并且为错误id就直接返回
+        // 3. 缓存判断是否已经查询过数据库，如果是，并且为错误id就直接返回（避免恶意的频繁访问数据库）
         boolean isExist = checkUserExist(id);
         if (!isExist) {
             return false;
         }
-
+        // 4. 更新数据库信息
         Boolean result = sysUserMapper.updateById(sysUserUpdateQueryReqyest);
 
-        // 清除缓存确保数据干净
+        // 5. 清除缓存确保数据干净
         userIdExistCache.remove(id);
 
+        // 6. 返回数据是否更新成功数据
         return result;
     }
 
 
     /**
-     * 根据id进入缓存查看
+     * 根据id进入缓存查看，避免恶意的频繁访问数据库
      * @param id
      * @return
      */

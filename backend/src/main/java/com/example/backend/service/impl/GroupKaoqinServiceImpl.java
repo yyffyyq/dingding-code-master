@@ -36,6 +36,11 @@ public class GroupKaoqinServiceImpl extends ServiceImpl<GroupKaoqinMapper, Group
     @Resource
     private GroupKaoqinMapper groupKaoqinMapper;
 
+    /**
+     * 插入考勤组信息
+     * @param resultList 考勤组列表
+     * @return 返回成功插入数量
+     */
     @Override
     public Integer insertGroupList(List<GroupKaoqinDTO> resultList) {
 
@@ -89,8 +94,10 @@ public class GroupKaoqinServiceImpl extends ServiceImpl<GroupKaoqinMapper, Group
     @Override
     public QueryWrapper getQueryWrapper(GroupKaoqinQuertRequest groupKaoqinQuertRequest) {
 
+        // 1. 判断分页查询请求是否为空
         ThrowUtils.throwIf(groupKaoqinQuertRequest == null, ErrorCode.PARAMS_ERROR);
 
+        // 2. 获取请求体内的数据，并构造sql请求
         String groupId = groupKaoqinQuertRequest.getGroupId();
         String groupName = groupKaoqinQuertRequest.getGroupName();
         String sortField = groupKaoqinQuertRequest.getSortField();
@@ -102,6 +109,7 @@ public class GroupKaoqinServiceImpl extends ServiceImpl<GroupKaoqinMapper, Group
             queryWrapper.orderBy(sortField, "ascend".equals(sortOrder));
         }
 
+        // 3. 返回sql语句
         return queryWrapper;
     }
 

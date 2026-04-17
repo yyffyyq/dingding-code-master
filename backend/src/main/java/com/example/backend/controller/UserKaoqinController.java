@@ -15,6 +15,7 @@ import com.example.backend.service.UserGroupKaoqinRelService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.mybatisflex.core.paginate.Page;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,12 +28,13 @@ import static com.example.backend.constant.CommonConstant.ACCSEE_TOKEN;
 import static com.example.backend.constant.UserConstant.USER_LOGIN_STATE;
 
 /**
- *  控制层。
- *
+ * 考勤人员管理控制器
+ * 提供考勤组人员同步、考勤人员分页查询等接口。
  * @author <a href="https://github.com/yyffyyq">代码制造者yfy</a>
  */
 @RestController
 @RequestMapping("/userKaoqin")
+@Tag(name = "考勤人员管理")
 public class UserKaoqinController {
 
     @Autowired
@@ -44,11 +46,11 @@ public class UserKaoqinController {
      * 获取考勤组人员，并添加到数据库内
      * @param group_id 考勤组id
      * @param request http请求，用于获取token和op_us_id
-     * @return 返回成功信息
+     * @return 同步结果
      * @exception
      */
     @PostMapping("/get/userId")
-    @Operation(summary = "获取考勤人员信息并存入数据库中" ,description = "通过考勤组id获取考勤人员信息并存入数据库")
+    @Operation(summary = "同步考勤组人员", description = "通过考勤组ID获取考勤人员信息并存入数据库")
     public BaseResponse<String> getUserkaoqin(@RequestParam String group_id, HttpServletRequest request) {
 
         // 1. 判断http请求是否为空
@@ -71,7 +73,6 @@ public class UserKaoqinController {
             Object userVO = request.getSession().getAttribute(USER_LOGIN_STATE);
             SysUser opUser = (SysUser) userVO;
 
-
             // 4. 调用方法获取考勤组考勤人员user_id列表
             resultList = userKaoqinService.getMemeberListId(group_id, accessToken, opUser.getUserId());
 
@@ -88,9 +89,15 @@ public class UserKaoqinController {
         return ResultUtils.success(result + idList);
     }
 
-    // 查询，根据考勤组groupId获取考勤人员列表，
-    // 分页查询
+    /**
+     * 查询，根据考勤组groupId获取考勤人员列表，分页查询
+     * @param userKaoqinByGroupIdQuertRequest 考勤人员根据考勤组id分页查询请求
+     * @param request http请求
+     * @return 返回考勤人员分页查询结果
+     * @throws JsonProcessingException
+     */
     @PostMapping("/get/list/userkaoqins")
+    @Operation(summary = "分页查询考勤组人员", description = "根据考勤组ID分页查询考勤人员列表")
     public BaseResponse<Page<UserKaoqinVO>> getGroupList(@RequestBody UserKaoqinByGroupIdQuertRequest userKaoqinByGroupIdQuertRequest
             , HttpServletRequest request) throws JsonProcessingException {
         ThrowUtils.throwIf(request == null, ErrorCode.PARAMS_ERROR);
