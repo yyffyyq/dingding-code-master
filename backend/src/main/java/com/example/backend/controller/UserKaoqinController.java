@@ -5,26 +5,15 @@ import com.example.backend.common.ResultUtils;
 import com.example.backend.exception.ErrorCode;
 import com.example.backend.exception.ThrowUtils;
 import com.example.backend.model.dto.UserKaoqinDTO;
-import com.example.backend.model.dto.groupKaoqin.GroupKaoqinDTO;
 import com.example.backend.model.entity.SysUser;
-import com.example.backend.model.vo.sysUservo.SysUserVO;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mybatisflex.core.paginate.Page;
-import jakarta.annotation.Resource;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import com.example.backend.model.entity.UserKaoqin;
 import com.example.backend.service.UserKaoqinService;
-import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import static com.example.backend.constant.CommonConstant.ACCSEE_TOKEN;
 import static com.example.backend.constant.UserConstant.USER_LOGIN_STATE;
@@ -39,16 +28,7 @@ import static com.example.backend.constant.UserConstant.USER_LOGIN_STATE;
 public class UserKaoqinController {
 
     @Autowired
-    // todo 这个resttemplate是干嘛的？
-    private RestTemplate restTemplate;
-    @Autowired
     private UserKaoqinService userKaoqinService;
-
-    @Value("${dingtalk.getMemberIdList}")
-    private String getMemberIdList;
-
-    @Autowired
-    private ObjectMapper objectMapper;
 
     /**
      * 获取考勤组人员，并添加到数据库内
@@ -58,36 +38,46 @@ public class UserKaoqinController {
      * @exception
      */
     @PostMapping("/get/userId")
+    @Operation(summary = "获取考勤人员信息并存入数据库中" ,description = "通过考勤组id获取考勤人员信息并存入数据库")
     public BaseResponse<String> getUserkaoqin(@RequestParam String group_id, HttpServletRequest request) {
 
-        ThrowUtils.throwIf(request == null , ErrorCode.PARAMS_ERROR);
+        // 1. 判断http请求是否为空
+        ThrowUtils.throwIf(request == null, ErrorCode.PARAMS_ERROR);
 
+        // 2. 构建返回获取需要插入的考勤人员列表
         List<UserKaoqinDTO> resultList = new ArrayList<>();
 
         // 判断接口是否调用成功
         String result = "无操作";
 
         // 调用钉钉API，然后存入数据库中
-        try{
+        List<String> idList = null;
+        try {
 
-            // 获取access_token
-            Object accessTokenobj =  request.getSession().getAttribute(ACCSEE_TOKEN);;
+            // 3. 获取access_token，操作人员op_user_id
+            Object accessTokenobj = request.getSession().getAttribute(ACCSEE_TOKEN);
             String accessToken = (String) accessTokenobj;
 
-            // 获取操作者id
             Object userVO = request.getSession().getAttribute(USER_LOGIN_STATE);
             SysUser opUser = (SysUser) userVO;
 
-            // 调用方法获取成员
-            resultList = userKaoqinService.getMemeberListId(group_id,accessToken,opUser.getUserId());
 
-            //获取后批量插入
-            result = userKaoqinService.insertGroupList(resultList,group_id);
+            // 4. 调用方法获取考勤组考勤人员user_id列表
+            resultList = userKaoqinService.getMemeberListId(group_id, accessToken, opUser.getUserId());
 
-        }catch (Exception e){
-            System.out.println("报错了，报错："+e);
+            // 5. 通过考勤人员user_id列表批量插入
+            idList = userKaoqinService.insertGroupList(resultList, group_id);
+
+            // 6. 通过用户user_idList(idList) 获取用户namelist
+            result = userKaoqinService.insertUserName(idList,accessToken);
+
+        } catch (Exception e) {
+            System.out.println("报错了，报错：" + e);
             e.printStackTrace();
         }
-        return ResultUtils.success(result);
+        return ResultUtils.success(result + idList);
     }
+
+
+
 }

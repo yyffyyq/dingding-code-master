@@ -4,6 +4,7 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.example.backend.mapper.UserKaoqinMapper">
 
+    <!--批量物理删除考勤人员数据-->
     <delete id="deleteBatchByUserIds">
         DELETE FROM user_kaoqin
         WHERE user_id IN
@@ -11,4 +12,18 @@
             #{userId}
         </foreach>
     </delete>
+
+    <!--批量更新用户名字-->
+    <update id="batchUpdateUserName">
+        update user_kaoqin
+        set user_name = case user_id
+        <foreach collection="list" item="item">
+            when #{item.userId} then #{item.userName}
+        </foreach>
+        end
+        where user_id in
+        <foreach collection="list" item="item" open="(" separator="," close=")">
+            #{item.userId}
+        </foreach>
+    </update>
 </mapper>

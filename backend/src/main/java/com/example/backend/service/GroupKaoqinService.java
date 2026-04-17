@@ -23,6 +23,11 @@ public interface GroupKaoqinService extends IService<GroupKaoqin> {
      */
     Integer insertGroupList(List<GroupKaoqinDTO> resultList);
 
+    /**
+     * 分页查询函数
+     * @param groupKaoqinQuertRequest
+     * @return
+     */
     QueryWrapper getQueryWrapper(GroupKaoqinQuertRequest groupKaoqinQuertRequest);
 
     /**

@@ -61,5 +61,10 @@ public interface SysUserService extends IService<SysUser> {
     List<SysUserVO> getUserVoList(List<SysUser> records);
 
 
+    /**
+     * 更新系统用户权限，根据系统用户id
+     * @param sysUserUpdateQueryReqyest 更新系统用户权限请求
+     * @return
+     */
     Boolean updateRoleById(SysUserUpdateQueryReqyest sysUserUpdateQueryReqyest);
 }

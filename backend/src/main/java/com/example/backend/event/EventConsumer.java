@@ -11,6 +11,7 @@ import com.example.backend.util.SpringContextUtil;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Component; // 新增导入
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -91,7 +92,10 @@ public class EventConsumer implements GenericEventListener {
                 // 获取更新后的考勤组内的员工信息
                 List<UserKaoqinDTO> userDTOList = userService.getMemeberListId(String.valueOf(groupId),AccessToken,user_id);
                 //获取后批量插入
-                result = userService.insertGroupList(userDTOList,String.valueOf(groupId));
+                List<String> idList = new ArrayList<>();
+                idList = userService.insertGroupList(userDTOList,String.valueOf(groupId));
+                // 6. 通过用户user_idList(idList) 获取用户namelist
+                result = userService.insertUserName(idList,AccessToken);
                 System.out.println(result);
                 break;
         }

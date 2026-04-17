@@ -19,4 +19,9 @@ public interface UserKaoqinMapper extends BaseMapper<UserKaoqin> {
      */
     void deleteBatchByUserIds(@Param("userIds")List<String> userIds);
 
+    /**
+     * 批量更新用户名字
+     * @param userkaoqinList
+     */
+    int batchUpdateUserName(@Param("list") List<UserKaoqin> userkaoqinList);
 }

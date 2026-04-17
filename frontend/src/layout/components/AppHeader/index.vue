@@ -64,7 +64,7 @@ const originItems = [
     label: '管理员',
     children: [
       { key: '/admin/usermanage', label: '用户管理' },
-      { key: '/admin/other', label: '其他管理页面' }
+      { key: '/admin/attendance-group', label: '考勤组管理' }
     ]
   },
   { key: '/test', label: '测试页面(需登录)' }

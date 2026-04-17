@@ -21,6 +21,10 @@ dingtalk:
 
   # 获取考勤组用户id列表
   getMemberIdList: https://oapi.dingtalk.com/topapi/attendance/group/memberusers/list
+
+  # 获取用户名字，通过用户id列表
+  getUserKaoqinInfoListUrl : https://oapi.dingtalk.com/topapi/smartwork/hrm/employee/list
+
   app:
     client-id: ding929qmi3qamdahca1
     client-secret: KCUWb3jZwzafOxUt6K2uorXpYnLT3mXRayEq_rZqqhHWT5jzZuL9rC0WWthccivd

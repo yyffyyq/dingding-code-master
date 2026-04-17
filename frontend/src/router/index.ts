@@ -3,6 +3,8 @@ import HomeView from '../views/home/index.vue'
 import UserLogin from '../views/login-user/index.vue'
 import UserInfo from '../views/user-info/index.vue'
 import UserManage from '../views/admin/UserManage.vue'
+import AttendanceGroupManage from '../views/admin/AttendanceGroupManage.vue'
+import AttendanceGroupUserManage from '../views/admin/AttendanceGroupUserManage.vue'
 import Test from '../views/test/index.vue'
 import { userLoginUserStore } from '@/stores/login-user'
 import { message } from 'ant-design-vue'
@@ -35,6 +37,16 @@ const router = createRouter({
             path: '/admin/usermanage',
             name: '系统用户管理页面',
             component: UserManage
+        },
+        {
+            path: '/admin/attendance-group',
+            name: '考勤组管理页面',
+            component: AttendanceGroupManage
+        },
+        {
+            path: '/admin/attendance-group-user',
+            name: '考勤组人员管理页面',
+            component: AttendanceGroupUserManage
         },
     ],
 })
