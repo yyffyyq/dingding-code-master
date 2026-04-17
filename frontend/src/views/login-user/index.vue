@@ -15,7 +15,7 @@ import { ref, onMounted } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import LoginForm from './components/LoginForm.vue';
 import { doLogin} from './js/login-api';
-import { dingLogin } from '@/api/modules/ding-user';
+import { dingLogin } from '@/api/dingUserController';
 import './css/login-style.css';
 
 const router = useRouter();

@@ -1,6 +1,6 @@
 // @ts-ignore
 /* eslint-disable */
-import request from "@/request.ts";
+import request from "@/request";
 
 /** 管理员分页查询系统用户 POST /sysUser/admin/page */
 export async function sysUserListpage(

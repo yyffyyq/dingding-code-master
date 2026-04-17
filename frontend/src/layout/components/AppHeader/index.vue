@@ -50,7 +50,7 @@
 <script setup lang="ts">
 import {ref, onMounted, computed} from 'vue'
 import { useRouter, useRoute } from 'vue-router'
-import { health, logout } from '@/api/modules/ding-user'
+import { health, logout } from '@/api/dingUserController'
 import { ElMessage } from 'element-plus'
 import { DING_CLIENT_ID } from '@/config/constants'
 import {userLoginUserStore} from "@/stores/login-user";

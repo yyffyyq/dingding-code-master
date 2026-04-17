@@ -1,6 +1,6 @@
 // @ts-ignore
 /* eslint-disable */
-import request from "@/request.ts";
+import request from "@/request";
 
 /** 获取用户登录状态 获取用户登录状态 GET /dingUser/get/login */
 export async function health(options?: { [key: string]: any }) {

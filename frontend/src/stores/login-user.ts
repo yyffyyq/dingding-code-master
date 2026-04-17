@@ -1,6 +1,6 @@
 import { ref } from 'vue'
 import { defineStore } from 'pinia'
-import { health } from '@/api/modules/ding-user'
+import { health } from '@/api/dingUserController'
 
 /**
  * 登录用户信息的全局包

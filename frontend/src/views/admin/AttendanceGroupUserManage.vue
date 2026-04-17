@@ -14,11 +14,9 @@
       </template>
 
       <el-table :data="userList" v-loading="loading" border stripe style="width: 100%">
-        <el-table-column prop="userId" label="用户ID" width="180" align="center" />
-
         <el-table-column prop="userName" label="用户姓名" align="center" />
 
-        <el-table-column prop="groupId" label="所属考勤组ID" width="180" align="center" />
+        <el-table-column prop="createTime" label="创建时间" width="180" align="center" />
       </el-table>
 
       <div class="pagination-wrapper">
@@ -40,7 +38,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
-import { getUserkaoqin } from '@/api/modules/user-kaoqin';
+import { getGroupList } from '@/api/userKaoqinController';
 import { ElMessage } from 'element-plus';
 import { ArrowLeft } from '@element-plus/icons-vue';
 
@@ -49,7 +47,7 @@ const route = useRoute();
 
 const groupId = ref<string>('');
 const groupName = ref<string>('');
-const userList = ref<any[]>([]);
+const userList = ref<API.UserKaoqinVO[]>([]);
 const total = ref(0);
 const pageNum = ref(1);
 const pageSize = ref(10);
@@ -64,25 +62,16 @@ async function fetchUserList() {
 
   loading.value = true;
   try {
-    const res = await getUserkaoqin({
-      group_id: groupId.value
+    const res = await getGroupList({
+      pageNum: pageNum.value,
+      pageSize: pageSize.value,
+      groupId: groupId.value
     });
 
     if (res?.data?.code === 0) {
-      // 后端返回的是字符串，需要解析
-      let records = [];
-      try {
-        records = JSON.parse(res.data.data || '[]');
-      } catch (e) {
-        records = [];
-      }
-      // 转换为表格数据格式
-      userList.value = records.map((item: any, index: number) => ({
-        userId: item.userId || item.id || `user_${index}`,
-        userName: item.userName || item.name || item.nickName || '未知用户',
-        groupId: groupId.value
-      }));
-      total.value = userList.value.length;
+      const pageData = res.data.data;
+      userList.value = pageData?.records || [];
+      total.value = Number(pageData?.totalRow || 0);
     } else {
       ElMessage.error(res?.data?.message || '获取考勤人员数据失败');
     }

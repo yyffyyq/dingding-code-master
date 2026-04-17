@@ -52,7 +52,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
-import { getGroupList } from '@/api/modules/group-kaoqin';
+import { getGroupList1 } from '@/api/groupKaoqinController';
 import { ElMessage } from 'element-plus';
 
 const router = useRouter();
@@ -67,7 +67,7 @@ const loading = ref(false);
 async function fetchGroupList() {
   loading.value = true;
   try {
-    const res = await getGroupList({
+    const res = await getGroupList1({
       pageNum: pageNum.value,
       pageSize: pageSize.value
     });

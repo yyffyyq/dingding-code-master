@@ -23,6 +23,12 @@ declare namespace API {
     message?: string;
   };
 
+  type BaseResponsePageUserKaoqinVO = {
+    code?: number;
+    data?: PageUserKaoqinVO;
+    message?: string;
+  };
+
   type BaseResponseString = {
     code?: number;
     data?: string;
@@ -72,6 +78,15 @@ declare namespace API {
     optimizeCountQuery?: boolean;
   };
 
+  type PageUserKaoqinVO = {
+    records?: UserKaoqinVO[];
+    pageNumber?: number;
+    pageSize?: number;
+    totalPage?: number;
+    totalRow?: number;
+    optimizeCountQuery?: boolean;
+  };
+
   type SysUserQueryRequest = {
     pageNum?: number;
     pageSize?: number;
@@ -93,5 +108,19 @@ declare namespace API {
     nickName?: string;
     userRole?: string;
     avarUrl?: string;
+  };
+
+  type UserKaoqinByGroupIdQuertRequest = {
+    pageNum?: number;
+    pageSize?: number;
+    sortField?: string;
+    sortOrder?: string;
+    userName?: string;
+    groupId?: string;
+  };
+
+  type UserKaoqinVO = {
+    userName?: string;
+    createTime?: string;
   };
 }
