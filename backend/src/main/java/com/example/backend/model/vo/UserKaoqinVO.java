@@ -3,6 +3,7 @@ package com.example.backend.model.vo;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 
 @Data
 public class UserKaoqinVO implements Serializable {
@@ -14,5 +15,5 @@ public class UserKaoqinVO implements Serializable {
     /**
      * 创建时间
      */
-    private String userKaoqinVOPage;
+    private LocalDateTime createTime;
 }

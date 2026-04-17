@@ -1,6 +1,11 @@
 package com.example.backend.service;
 
+import com.example.backend.model.dto.UserKaoqinByGroupIdQuertRequest;
 import com.example.backend.model.dto.UserKaoqinDTO;
+import com.example.backend.model.entity.GroupKaoqin;
+import com.example.backend.model.vo.UserKaoqinVO;
+import com.example.backend.model.vo.groupKaovo.GroupKaoqinVO;
+import com.mybatisflex.core.query.QueryWrapper;
 import com.mybatisflex.core.service.IService;
 import com.example.backend.model.entity.UserKaoqin;
 
@@ -38,4 +43,19 @@ public interface UserKaoqinService extends IService<UserKaoqin> {
      */
     String insertUserName(List<String> idList,String accessToken);
 
+    QueryWrapper getQueryWrapperByUserIdList(List<String> idList, UserKaoqinByGroupIdQuertRequest userKaoqinByGroupIdQuertRequest);
+
+    /**
+     * 获取封装后的考勤人员信息列表
+     * @param records
+     * @return
+     */
+    List<UserKaoqinVO> getuserKaoqinList(List<UserKaoqin> records);
+
+    /**
+     * 封装考勤人员信息
+     * @param userKaoqin
+     * @return
+     */
+    UserKaoqinVO getUserKaoqinVO(UserKaoqin userKaoqin);
 }

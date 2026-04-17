@@ -1,9 +1,11 @@
 package com.example.backend.model.dto;
 
 import com.example.backend.common.PageRequest;
+import lombok.Data;
 
 import java.io.Serializable;
 
+@Data
 public class UserKaoqinByGroupIdQuertRequest extends PageRequest implements Serializable {
 
     /**

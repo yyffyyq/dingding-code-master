@@ -151,9 +151,4 @@ public class GroupKaoqinController {
         return ResultUtils.success(groupKaoqinVOPage);
     }
 
-
-    // 用户点击查看 进入查看考勤组，这里只需要提供了一个按钮，前端通过 group_id 去查看考勤组人员表
-
-
-
 }

@@ -4,8 +4,16 @@ import com.example.backend.common.BaseResponse;
 import com.example.backend.common.ResultUtils;
 import com.example.backend.exception.ErrorCode;
 import com.example.backend.exception.ThrowUtils;
+import com.example.backend.model.dto.UserKaoqinByGroupIdQuertRequest;
 import com.example.backend.model.dto.UserKaoqinDTO;
+import com.example.backend.model.dto.groupKaoqin.GroupKaoqinQuertRequest;
 import com.example.backend.model.entity.SysUser;
+import com.example.backend.model.entity.UserKaoqin;
+import com.example.backend.model.vo.UserKaoqinVO;
+import com.example.backend.model.vo.groupKaovo.GroupKaoqinVO;
+import com.example.backend.service.UserGroupKaoqinRelService;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.mybatisflex.core.paginate.Page;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.web.bind.annotation.*;
@@ -29,6 +37,8 @@ public class UserKaoqinController {
 
     @Autowired
     private UserKaoqinService userKaoqinService;
+    @Autowired
+    private UserGroupKaoqinRelService userGroupKaoqinRelService;
 
     /**
      * 获取考勤组人员，并添加到数据库内
@@ -78,6 +88,37 @@ public class UserKaoqinController {
         return ResultUtils.success(result + idList);
     }
 
+    // 查询，根据考勤组groupId获取考勤人员列表，
+    // 分页查询
+    @PostMapping("/get/list/userkaoqins")
+    public BaseResponse<Page<UserKaoqinVO>> getGroupList(@RequestBody UserKaoqinByGroupIdQuertRequest userKaoqinByGroupIdQuertRequest
+            , HttpServletRequest request) throws JsonProcessingException {
+        ThrowUtils.throwIf(request == null, ErrorCode.PARAMS_ERROR);
+        long pageNum = userKaoqinByGroupIdQuertRequest.getPageNum();
+        long pageSize = userKaoqinByGroupIdQuertRequest.getPageSize();
 
+        // 先通过 userKaoqinByGroupIdQuertRequest 中的group_id 获取到userIdList组
+        ThrowUtils.throwIf(userKaoqinByGroupIdQuertRequest.getGroupId() == null, ErrorCode.PARAMS_ERROR,"查询考勤组id为空");
+        List<String> idList = userGroupKaoqinRelService.getIdListByGroupId(userKaoqinByGroupIdQuertRequest.getGroupId());
 
+        // 判断查询到的信息为空，返回空值
+        Page<UserKaoqinVO> emptyPage = new Page<>(pageNum, pageSize, 0);
+        if (idList == null || idList.isEmpty()) {
+            emptyPage.setRecords(new ArrayList<>());
+            return ResultUtils.success(emptyPage);
+        }
+
+        // 2. 根据 userIdList 分页查询 UserKaoqin
+        Page<UserKaoqin> userKaoqinPage = userKaoqinService.page(
+                Page.of(pageNum, pageSize),
+                userKaoqinService.getQueryWrapperByUserIdList(idList, userKaoqinByGroupIdQuertRequest)
+        );
+
+        Page<UserKaoqinVO> userKaoqinVOPage = new Page<>(pageNum, pageSize, userKaoqinPage.getTotalRow());
+        List<UserKaoqinVO> userKaoqinVOList = userKaoqinService.getuserKaoqinList(userKaoqinPage.getRecords());
+
+        userKaoqinVOPage.setRecords(userKaoqinVOList);
+
+        return ResultUtils.success(userKaoqinVOPage);
+    }
 }

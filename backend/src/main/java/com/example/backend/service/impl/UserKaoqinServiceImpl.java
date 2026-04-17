@@ -1,11 +1,15 @@
 package com.example.backend.service.impl;
 
+import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.util.StrUtil;
 import com.example.backend.exception.BusinessException;
 import com.example.backend.exception.ErrorCode;
 import com.example.backend.exception.ThrowUtils;
 import com.example.backend.mapper.UserGroupKaoqinRelMapper;
+import com.example.backend.model.dto.UserKaoqinByGroupIdQuertRequest;
 import com.example.backend.model.dto.UserKaoqinDTO;
 import com.example.backend.model.entity.UserGroupKaoqinRel;
+import com.example.backend.model.vo.UserKaoqinVO;
 import com.example.backend.service.UserGroupKaoqinRelService;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -14,8 +18,10 @@ import com.mybatisflex.spring.service.impl.ServiceImpl;
 import com.example.backend.model.entity.UserKaoqin;
 import com.example.backend.mapper.UserKaoqinMapper;
 import com.example.backend.service.UserKaoqinService;
+import io.micrometer.common.util.StringUtils;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
@@ -273,10 +279,16 @@ public class UserKaoqinServiceImpl extends ServiceImpl<UserKaoqinMapper, UserKao
                     return user;
                 })
                 .toList();
-        int row = userKaoqinMapper.batchUpdateUserName(userkaoqinList);
+        int row = 0;
+        if(userkaoqinList.size() > 0){
+            row = userKaoqinMapper.batchUpdateUserName(userkaoqinList);
+
+        }
+
         // 7. 返回存入值
         return "成功修改行数：" + row ;
     }
+
 
     /**
      * 钉钉获取的用户信息存入到hashmap中
@@ -390,7 +402,65 @@ public class UserKaoqinServiceImpl extends ServiceImpl<UserKaoqinMapper, UserKao
         return new HashSet<>(idList);
     }
 
+    /**
+     * 分页查询考勤人员信息根据groupid
+     * @param idList
+     * @param request
+     * @return
+     */
+    @Override
+    public QueryWrapper getQueryWrapperByUserIdList(List<String> idList, UserKaoqinByGroupIdQuertRequest request) {
 
+        // 1. 判断查询请求
+        ThrowUtils.throwIf(request == null ,ErrorCode.PARAMS_ERROR,"分页查询请求参数为空");
+        // 2. 构建查询语句
+        QueryWrapper queryWrapper = new QueryWrapper();
+        String userName = request.getUserName();
+        String sortField = request.getSortField();
+        String sortOrder = request.getSortOrder();
+        // 必须条件：只查这个考勤组下的用户
+        queryWrapper.in("user_id", idList, idList != null && !idList.isEmpty());
+        queryWrapper.like(UserKaoqin::getUserName, userName, StrUtil.isNotBlank(userName));
+        if (StrUtil.isNotBlank(sortField)) {
+            queryWrapper.orderBy(sortField, "ascend".equals(sortOrder));
+        }
+        // 3. 返回查询语句
+        return queryWrapper;
+    }
+
+    /**
+     * 获取封装后的考勤人员信息
+     * @param records
+     * @return
+     */
+    @Override
+    public List<UserKaoqinVO> getuserKaoqinList(List<UserKaoqin> records) {
+        if(CollUtil.isEmpty(records)){
+            return new ArrayList<>();
+        }
+        //landa表达式
+        return records.stream()
+                .map(this::getUserKaoqinVO)
+                .collect(Collectors.toList());
+    }
+
+
+    /**
+     * 封装考勤人员信息
+     * @param userKaoqin
+     * @return
+     */
+    @Override
+    public UserKaoqinVO getUserKaoqinVO(UserKaoqin userKaoqin) {
+        if (userKaoqin == null) {
+            return null;
+        }
+
+        UserKaoqinVO userKaoqinVO = new UserKaoqinVO();
+        BeanUtils.copyProperties(userKaoqin, userKaoqinVO);
+
+        return userKaoqinVO;
+    }
 
 
 }
