@@ -131,6 +131,7 @@ public class GroupKaoqinController {
      * @throws BusinessException http请求为空抛出/分页查询请求页码或页数为空抛出
      */
     @PostMapping("/get/list/groups")
+    @Operation(summary = "考勤组分页查询")
     @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
     public BaseResponse<Page<GroupKaoqinVO>> getGroupList(@RequestBody GroupKaoqinQuertRequest groupKaoqinQuertRequest
             , HttpServletRequest request) throws JsonProcessingException {

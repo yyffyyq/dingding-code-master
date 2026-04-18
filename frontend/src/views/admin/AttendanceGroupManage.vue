@@ -2,23 +2,23 @@
   <div class="attendance-group-manage-container">
     <el-card shadow="never">
       <template #header>
-        <div class="card-header">
-          <span>考勤组管理</span>
+        <div class="header-wrapper">
+          <div class="card-header">
+            <span>考勤组管理</span>
+          </div>
+          <div class="button-example">
+            <div class="button-row">
+              <el-button type="success" @click="updateGroup">更新考勤组数据</el-button>
+            </div>
+          </div>
         </div>
       </template>
 
+      <!-- 考勤组列表展示 -->
       <el-table :data="groupList" v-loading="loading" border stripe style="width: 100%">
         <el-table-column prop="groupId" label="考勤组ID" width="180" align="center" />
 
         <el-table-column prop="groupName" label="考勤组名称" align="center" />
-
-        <el-table-column label="考勤组人数" width="120" align="center">
-          <template #default="scope">
-            <el-tag type="primary" effect="light">
-              {{ scope.row.memberCount || 0 }} 人
-            </el-tag>
-          </template>
-        </el-table-column>
 
         <el-table-column label="操作" width="150" align="center">
           <template #default="scope">
@@ -52,7 +52,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
-import { getGroupList1 } from '@/api/groupKaoqinController';
+import { getGroupList1,getSimpleGroup } from '@/api/groupKaoqinController';
 import { ElMessage } from 'element-plus';
 
 const router = useRouter();
@@ -62,6 +62,22 @@ const total = ref(0);
 const pageNum = ref(1);
 const pageSize = ref(10);
 const loading = ref(false);
+
+// 更新考勤组数据
+async function updateGroup(){
+  try {
+    const res = await getSimpleGroup();
+    if (res?.data?.code === 0) {
+      ElMessage.success('更新考勤组数据成功');
+      onMounted();
+    } else {
+      ElMessage.error(res?.data?.message || '更新考勤组数据失败');
+    }
+  } catch (error) {
+    console.error('更新考勤组数据异常:', error);
+    ElMessage.error('网络请求失败，请稍后再试');
+  }
+}
 
 // 获取考勤组列表
 async function fetchGroupList() {
@@ -123,6 +139,12 @@ onMounted(() => {
   padding: 20px;
 }
 
+.header-wrapper {
+  display: flex;
+  justify-content: space-between; /* 左右分开 */
+  align-items: center;            /* 垂直居中 */
+}
+
 .card-header {
   font-weight: 600;
   font-size: 16px;
@@ -134,4 +156,23 @@ onMounted(() => {
   display: flex;
   justify-content: flex-end;
 }
+
+
+.button-example {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.button-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: center;
+}
+
+.button-row > * {
+  margin: 0;
+}
+
 </style>

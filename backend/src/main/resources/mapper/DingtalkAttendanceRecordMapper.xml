@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.backend.mapper.DingtalkAttendanceRecordMapper">
+
+    <!-- 批量插入考勤记录 -->
+    <insert id="insertBatchList">
+        INSERT INTO dingtalk_attendance_record (
+            record_id, corp_id, biz_id, user_id, group_id, work_date,
+            check_type, user_check_time, plan_check_time, base_check_time,
+            class_id, plan_id, time_result, location_result, is_legal,
+            is_normal, source_type, location_method, ding_create_time,
+            ding_modify_time, raw_json, create_time, update_time, is_deleted
+        ) VALUES
+        <foreach collection="list" item="item" separator=",">
+            (
+                #{item.recordId}, #{item.corpId}, #{item.bizId}, #{item.userId}, #{item.groupId}, #{item.workDate},
+                #{item.checkType}, #{item.userCheckTime}, #{item.planCheckTime}, #{item.baseCheckTime},
+                #{item.classId}, #{item.planId}, #{item.timeResult}, #{item.locationResult}, #{item.isLegal},
+                #{item.isNormal}, #{item.sourceType}, #{item.locationMethod}, #{item.dingCreateTime},
+                #{item.dingModifyTime}, #{item.rawJson}, #{item.createTime}, #{item.updateTime}, #{item.isDeleted}
+            )
+        </foreach>
+    </insert>
+
+    <!-- 根据记录ID批量查询 -->
+    <select id="selectByRecordIds" resultType="com.example.backend.model.entity.DingtalkAttendanceRecord">
+        SELECT * FROM dingtalk_attendance_record
+        WHERE record_id IN
+        <foreach collection="recordIds" item="recordId" open="(" separator="," close=")">
+            #{recordId}
+        </foreach>
+        AND is_deleted = 0
+    </select>
+
+    <!-- 根据用户ID和日期范围查询考勤记录 -->
+    <select id="selectByUserIdAndDateRange" resultType="com.example.backend.model.entity.DingtalkAttendanceRecord">
+        SELECT * FROM dingtalk_attendance_record
+        WHERE user_id = #{userId}
+        AND work_date BETWEEN #{startDate} AND #{endDate}
+        AND is_deleted = 0
+        ORDER BY user_check_time ASC
+    </select>
+
+</mapper>

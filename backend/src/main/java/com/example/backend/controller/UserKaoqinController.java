@@ -50,7 +50,7 @@ public class UserKaoqinController {
      * @exception
      */
     @PostMapping("/get/userId")
-    @Operation(summary = "同步考勤组人员", description = "通过考勤组ID获取考勤人员信息并存入数据库")
+    @Operation(summary = "同步考勤组人员", description = "通过钉钉接口考勤组ID获取考勤人员信息并存入数据库")
     public BaseResponse<String> getUserkaoqin(@RequestParam String group_id, HttpServletRequest request) {
 
         // 1. 判断http请求是否为空

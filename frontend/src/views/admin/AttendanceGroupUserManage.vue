@@ -10,6 +10,11 @@
             </el-button>
             <span class="group-title">考勤组：{{ groupName }}</span>
           </div>
+          <div class="button-example">
+            <div class="button-row">
+              <el-button type="success" @click="updateUserList">更新考勤人员</el-button>
+            </div>
+          </div>
         </div>
       </template>
 
@@ -38,7 +43,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
-import { getGroupList } from '@/api/userKaoqinController';
+import { getGroupList , getUserkaoqin } from '@/api/userKaoqinController';
 import { ElMessage } from 'element-plus';
 import { ArrowLeft } from '@element-plus/icons-vue';
 
@@ -52,6 +57,29 @@ const total = ref(0);
 const pageNum = ref(1);
 const pageSize = ref(10);
 const loading = ref(false);
+
+// 更新考勤组考勤人员信息
+async function updateUserList(){
+  if (!groupId.value) {
+    ElMessage.error('考勤组ID不能为空');
+    return;
+  }
+  loading.value = true;
+  try{
+    const res = await getUserkaoqin({
+          group_id : groupId.value
+        });
+    if (res?.data?.code === 0) {
+      ElMessage.success('考勤人员更新成功')
+      fetchUserList();
+    }
+  }catch (error){
+    console.error('获取考勤人员数据异常:', error);
+    ElMessage.error('网络请求失败，请稍后再试');
+  }finally {
+    loading.value = false;
+  }
+}
 
 // 获取考勤组人员列表
 async function fetchUserList() {

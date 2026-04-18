@@ -72,3 +72,61 @@ CREATE TABLE `user_group_kaoqin_rel` (
     -- 唯一索引：防止同一个用户重复绑定同一个考勤组（核心业务约束）
                                          UNIQUE KEY `uk_user_group` (`user_id`,`group_id`,`is_deleted`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='用户-考勤组关联表';
+
+DROP TABLE IF EXISTS `dingtalk_attendance_record`;
+CREATE TABLE `dingtalk_attendance_record`  (
+                                               `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键ID',
+
+    -- ========= 钉钉原始标识 =========
+                                               `record_id` varchar(64) NOT NULL COMMENT '钉钉打卡记录ID（唯一）',
+                                               `corp_id` varchar(64) DEFAULT NULL COMMENT '企业corpId',
+                                               `biz_id` varchar(64) DEFAULT NULL COMMENT '业务ID（审批/补卡关联）',
+
+    -- ========= 人员 / 组织 =========
+                                               `user_id` varchar(64) NOT NULL COMMENT '员工userId',
+                                               `group_id` varchar(64) NOT NULL COMMENT '考勤组ID',
+
+    -- ========= 日期 / 类型 =========
+                                               `work_date` date NOT NULL COMMENT '工作日期（yyyy-MM-dd）',
+                                               `check_type` varchar(20) NOT NULL COMMENT '打卡类型：OnDuty=上班, OffDuty=下班',
+
+    -- ========= 时间相关 =========
+                                               `user_check_time` datetime NOT NULL COMMENT '实际打卡时间',
+                                               `plan_check_time` datetime DEFAULT NULL COMMENT '计划打卡时间',
+                                               `base_check_time` datetime DEFAULT NULL COMMENT '基准打卡时间',
+
+    -- ========= 排班信息 =========
+                                               `class_id` bigint(20) DEFAULT NULL COMMENT '班次ID',
+                                               `plan_id` bigint(20) DEFAULT NULL COMMENT '排班计划ID',
+
+    -- ========= 结果 =========
+                                               `time_result` varchar(20) DEFAULT NULL COMMENT '时间结果：Normal/Late/Early/Absent',
+                                               `location_result` varchar(20) DEFAULT NULL COMMENT '位置结果：Normal/Outside',
+                                               `is_legal` char(1) DEFAULT NULL COMMENT '是否合法记录：Y/N',
+                                               `is_normal` tinyint(1) NOT NULL DEFAULT 0 COMMENT '是否正常打卡：1=正常',
+
+    -- ========= 来源 =========
+                                               `source_type` varchar(32) DEFAULT NULL COMMENT '打卡来源：USER/BOSS/APPROVE',
+                                               `location_method` varchar(32) DEFAULT NULL COMMENT '定位方式',
+
+    -- ========= 钉钉时间 =========
+                                               `ding_create_time` datetime DEFAULT NULL COMMENT '钉钉创建时间',
+                                               `ding_modify_time` datetime DEFAULT NULL COMMENT '钉钉修改时间',
+
+    -- ========= 原始数据 =========
+                                               `raw_json` json DEFAULT NULL COMMENT '钉钉原始返回JSON',
+
+    -- ========= 系统字段 =========
+                                               `create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+                                               `update_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+                                               `is_deleted` tinyint(1) NOT NULL DEFAULT 0 COMMENT '软删除',
+
+                                               PRIMARY KEY (`id`),
+
+                                               UNIQUE KEY `uk_record_id` (`record_id`),
+
+                                               KEY `idx_user_date` (`user_id`, `work_date`),
+                                               KEY `idx_group_date` (`group_id`, `work_date`),
+                                               KEY `idx_work_date` (`work_date`)
+
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='钉钉考勤打卡明细表';
