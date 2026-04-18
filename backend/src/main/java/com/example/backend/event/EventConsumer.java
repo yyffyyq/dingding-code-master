@@ -101,7 +101,6 @@ public class EventConsumer implements GenericEventListener {
         }
 
         // 只会执行一次！
-
         return EventAckStatus.SUCCESS;
     }
 

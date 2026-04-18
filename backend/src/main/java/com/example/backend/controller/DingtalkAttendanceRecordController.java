@@ -13,6 +13,7 @@ import com.mybatisflex.core.paginate.Page;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
@@ -51,6 +52,7 @@ public class DingtalkAttendanceRecordController {
         ThrowUtils.throwIf(request == null, ErrorCode.PARAMS_ERROR);
 
         List<DingtalkAttendanceRecordVO> records = dingtalkAttendanceRecordService.getMyAttendanceRecords(request, queryDate);
+
         return ResultUtils.success(records);
     }
 
@@ -66,11 +68,13 @@ public class DingtalkAttendanceRecordController {
     @Operation(summary = "获取指定用户的考勤记录", description = "管理员查看单个考勤人员的考勤情况，默认查询今天")
     public BaseResponse<List<DingtalkAttendanceRecordVO>> getAttendanceRecordsByUserId(
             @PathVariable String userId,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate queryDate) {
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate queryDate,
+            HttpServletRequest request) {
 
         ThrowUtils.throwIf(userId == null || userId.isEmpty(), ErrorCode.PARAMS_ERROR, "用户ID不能为空");
 
-        List<DingtalkAttendanceRecordVO> records = dingtalkAttendanceRecordService.getAttendanceRecordsByUserId(userId, queryDate);
+        List<DingtalkAttendanceRecordVO> records = dingtalkAttendanceRecordService.getAttendanceRecordsByUserId(userId, queryDate, request);
+
         return ResultUtils.success(records);
     }
 
@@ -92,6 +96,7 @@ public class DingtalkAttendanceRecordController {
         ThrowUtils.throwIf(request == null, ErrorCode.PARAMS_ERROR);
 
         Integer count = dingtalkAttendanceRecordService.syncAttendanceRecordsByGroupId(dingtalkAttendanceRecordUpdateRequest, request);
+
         return ResultUtils.success(count);
     }
 

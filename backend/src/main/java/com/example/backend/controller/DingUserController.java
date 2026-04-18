@@ -12,6 +12,7 @@ import com.example.backend.model.eum.UserRoleEnum;
 import com.example.backend.model.vo.sysUservo.SysUserVO;
 import com.example.backend.service.SysUserService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
@@ -27,6 +28,7 @@ import java.util.Map;
 @CrossOrigin
 @RestController
 @RequestMapping("/dingUser")
+@Tag(name = "钉钉用户登录功能")
 public class DingUserController {
 
     // === 补充缺失的属性注入（确保你能顺利编译） ===
@@ -255,6 +257,7 @@ public class DingUserController {
      */
     @GetMapping("/test")
     @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
+    @Operation(summary = "权限校验", description = "用于校验用户全是是否通过")
     public String test(HttpServletRequest request) {
         return "通过";
     }

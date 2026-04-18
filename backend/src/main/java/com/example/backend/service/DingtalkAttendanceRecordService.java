@@ -33,7 +33,7 @@ public interface DingtalkAttendanceRecordService extends IService<DingtalkAttend
      * @param queryDate 查询日期（默认为今天）
      * @return 考勤记录列表
      */
-    List<DingtalkAttendanceRecordVO> getAttendanceRecordsByUserId(String userId, LocalDate queryDate);
+    List<DingtalkAttendanceRecordVO> getAttendanceRecordsByUserId(String userId, LocalDate queryDate,HttpServletRequest request);
 
     /**
      * 【管理员】根据考勤组ID更新考勤记录（从钉钉API获取并保存）

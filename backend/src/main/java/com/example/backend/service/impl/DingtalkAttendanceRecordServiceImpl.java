@@ -112,6 +112,8 @@ public class DingtalkAttendanceRecordServiceImpl extends ServiceImpl<DingtalkAtt
 
         List<DingtalkAttendanceRecord> records = dingtalkAttendanceRecordMapper.selectListByQuery(queryWrapper);
 
+        log.info("获取当前用户的考勤记录"+"操作人员："+request.getSession().getAttribute(USER_LOGIN_STATE)+"；查询信息:"+records);
+
         return getDingtalkAttendanceRecordVOList(records);
     }
 
@@ -123,7 +125,7 @@ public class DingtalkAttendanceRecordServiceImpl extends ServiceImpl<DingtalkAtt
      * @return 考勤记录列表
      */
     @Override
-    public List<DingtalkAttendanceRecordVO> getAttendanceRecordsByUserId(String userId, LocalDate queryDate) {
+    public List<DingtalkAttendanceRecordVO> getAttendanceRecordsByUserId(String userId, LocalDate queryDate,HttpServletRequest request) {
         // 1. 参数校验
         ThrowUtils.throwIf(StrUtil.isBlank(userId), ErrorCode.PARAMS_ERROR, "用户ID不能为空");
 
@@ -140,6 +142,8 @@ public class DingtalkAttendanceRecordServiceImpl extends ServiceImpl<DingtalkAtt
                 .orderBy(DingtalkAttendanceRecord::getUserCheckTime, true);
 
         List<DingtalkAttendanceRecord> records = dingtalkAttendanceRecordMapper.selectListByQuery(queryWrapper);
+
+        log.info("根据用户ID获取考勤记录"+"操作人员："+request.getSession().getAttribute(USER_LOGIN_STATE)+"；查询信息:"+records);
 
         return getDingtalkAttendanceRecordVOList(records);
     }
@@ -197,7 +201,8 @@ public class DingtalkAttendanceRecordServiceImpl extends ServiceImpl<DingtalkAtt
         // 6. 保存考勤记录到数据库
         Integer savedCount = saveAttendanceRecords(records, groupId);
 
-        log.info("成功同步考勤记录，考勤组ID：{}，记录数：{}", groupId, savedCount);
+        log.info("根据考勤组ID更新考勤记录"+"操作人员："+request.getSession().getAttribute(USER_LOGIN_STATE)+"；查询信息:"+
+                records+"成功同步考勤记录，考勤组ID：{}，记录数：{}", groupId, savedCount);
         return savedCount;
     }
 

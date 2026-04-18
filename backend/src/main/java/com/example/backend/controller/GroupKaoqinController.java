@@ -18,6 +18,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mybatisflex.core.paginate.Page;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import org.aspectj.lang.annotation.Around;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -42,6 +43,7 @@ import static com.example.backend.constant.CommonConstant.ACCSEE_TOKEN;
  */
 @RestController
 @RequestMapping("/groupKaoqin")
+@Tag(name = "考勤组功能部分")
 public class GroupKaoqinController {
 
     @Autowired

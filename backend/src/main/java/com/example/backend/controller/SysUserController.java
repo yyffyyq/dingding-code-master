@@ -13,6 +13,7 @@ import com.example.backend.model.vo.sysUservo.SysUserVO;
 import com.example.backend.service.SysUserService;
 import com.mybatisflex.core.paginate.Page;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -25,6 +26,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/sysUser")
+@Tag(name = "系统用户功能部分")
 public class SysUserController {
 
     @Autowired

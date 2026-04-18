@@ -2,6 +2,7 @@ package com.example.backend.controller;
 
 import com.example.backend.service.DingUserService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Value;
@@ -31,6 +32,7 @@ import static com.example.backend.constant.UserConstant.USER_LOGIN_STATE;
 @CrossOrigin
 @RestController
 @RequestMapping("/api")
+@Tag(name = "通用接口")
 public class Controller {
     @Value("${dingtalk.corpId}")
     private String appKey;
