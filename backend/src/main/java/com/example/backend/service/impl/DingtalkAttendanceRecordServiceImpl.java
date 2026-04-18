@@ -207,6 +207,35 @@ public class DingtalkAttendanceRecordServiceImpl extends ServiceImpl<DingtalkAtt
     }
 
     /**
+     * 【定时任务】根据考勤组ID更新考勤记录（从钉钉API获取并保存）
+     *
+     * @param groupId 考勤组ID
+     * @param checkDateFrom 开始时间
+     * @param checkDateTo 结束时间
+     * @param accessToken 钉钉AccessToken
+     * @return 更新的记录数量
+     */
+    @Override
+    public Integer syncAttendanceRecordsByGroupId(String groupId, LocalDateTime checkDateFrom, LocalDateTime checkDateTo, String accessToken) {
+        // 1. 参数校验
+        ThrowUtils.throwIf(StrUtil.isBlank(groupId), ErrorCode.PARAMS_ERROR, "考勤组ID不能为空");
+        ThrowUtils.throwIf(StrUtil.isBlank(accessToken), ErrorCode.PARAMS_ERROR, "AccessToken不能为空");
+
+        // 2. 根据考勤组ID获取用户ID列表
+        List<String> userIdList = userGroupKaoqinRelService.getIdListByGroupId(groupId);
+        ThrowUtils.throwIf(CollUtil.isEmpty(userIdList), ErrorCode.PARAMS_ERROR, "考勤组内没有用户");
+
+        // 3. 调用钉钉API获取考勤记录
+        List<DingtalkAttendanceRecord> records = fetchAttendanceRecordsFromDingTalk(userIdList, checkDateFrom, checkDateTo, accessToken);
+
+        // 4. 保存考勤记录到数据库
+        Integer savedCount = saveAttendanceRecords(records, groupId);
+
+        log.info("【定时任务】成功同步考勤记录，考勤组ID：{}，记录数：{}", groupId, savedCount);
+        return savedCount;
+    }
+
+    /**
      * 从钉钉API获取考勤记录
      *
      * @param userIdList    用户ID列表

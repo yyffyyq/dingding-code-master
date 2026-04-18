@@ -10,6 +10,7 @@ import com.mybatisflex.core.service.IService;
 import jakarta.servlet.http.HttpServletRequest;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -42,6 +43,16 @@ public interface DingtalkAttendanceRecordService extends IService<DingtalkAttend
      * @return 更新的记录数量
      */
     Integer syncAttendanceRecordsByGroupId(DingtalkAttendanceRecordUpdateRequest dingtalkAttendanceRecordUpdateRequest, HttpServletRequest request);
+
+    /**
+     * 【定时任务】根据考勤组ID更新考勤记录（从钉钉API获取并保存）
+     * @param groupId 考勤组ID
+     * @param checkDateFrom 开始时间
+     * @param checkDateTo 结束时间
+     * @param accessToken 钉钉AccessToken
+     * @return 更新的记录数量
+     */
+    Integer syncAttendanceRecordsByGroupId(String groupId, LocalDateTime checkDateFrom, LocalDateTime checkDateTo, String accessToken);
 
     /**
      * 【管理员】分页查询考勤组内所有人员的考勤记录
