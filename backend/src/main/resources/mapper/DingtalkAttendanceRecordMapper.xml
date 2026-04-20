@@ -43,4 +43,29 @@
         ORDER BY user_check_time ASC
     </select>
 
+    <update id="updateBatch">
+        update dingtalk_attendance_record
+        <set>
+            create_time = CASE id
+            <foreach collection="list" item="item">
+                WHEN #{item.id} THEN #{item.createTime}
+            </foreach>
+            END,
+            is_legal = CASE id
+            <foreach collection="list" item="item">
+                WHEN #{item.id} THEN #{item.isLegal}
+            </foreach>
+            END,
+            is_normal = CASE id
+            <foreach collection="list" item="item">
+                WHEN #{item.id} THEN #{item.isNormal}
+            </foreach>
+            END
+        </set>
+        WHERE id IN
+        <foreach collection="list" item="item" open="(" separator="," close=")">
+            #{item.id}
+        </foreach>
+    </update>
+
 </mapper>

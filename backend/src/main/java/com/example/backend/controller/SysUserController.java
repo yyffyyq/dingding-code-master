@@ -26,7 +26,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/sysUser")
-@Tag(name = "系统用户功能部分")
+//@Tag(name = "系统用户功能部分")
 public class SysUserController {
 
     @Autowired

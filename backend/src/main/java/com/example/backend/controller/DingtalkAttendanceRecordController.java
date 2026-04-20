@@ -30,7 +30,7 @@ import static com.example.backend.constant.UserConstant.ADMIN_ROLE;
  */
 @RestController
 @RequestMapping("/dingtalkAttendanceRecord")
-@Tag(name = "钉钉考勤记录管理")
+//@Tag(name = "钉钉考勤记录管理")
 public class DingtalkAttendanceRecordController {
 
     @Autowired
@@ -96,6 +96,10 @@ public class DingtalkAttendanceRecordController {
         ThrowUtils.throwIf(request == null, ErrorCode.PARAMS_ERROR);
 
         Integer count = dingtalkAttendanceRecordService.syncAttendanceRecordsByGroupId(dingtalkAttendanceRecordUpdateRequest, request);
+
+        // todo 创建一个对考勤信息 is_legal 是否合法记录：Y/N is_normal 是否正常打卡：1=正常 两个值做一个批量的判断并存入数据库中，
+        //  提取记录的条件为is_legal 为null的记录
+        boolean updateResult = dingtalkAttendanceRecordService.updateIsLegalAndIsNormal();
 
         return ResultUtils.success(count);
     }

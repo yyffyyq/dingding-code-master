@@ -37,4 +37,11 @@ public interface DingtalkAttendanceRecordMapper extends BaseMapper<DingtalkAtten
     List<DingtalkAttendanceRecord> selectByUserIdAndDateRange(@Param("userId") String userId,
                                                                @Param("startDate") String startDate,
                                                                @Param("endDate") String endDate);
+
+    /**
+     * 批量更新钉钉考勤记录
+     * @param updateList 考勤记录
+     * @return true/false 成功/失败
+     */
+    Boolean updateBatch(@Param("list")List<DingtalkAttendanceRecord> updateList);
 }

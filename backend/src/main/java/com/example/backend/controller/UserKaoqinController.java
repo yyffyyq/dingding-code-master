@@ -34,7 +34,7 @@ import static com.example.backend.constant.UserConstant.USER_LOGIN_STATE;
  */
 @RestController
 @RequestMapping("/userKaoqin")
-@Tag(name = "考勤人员管理")
+//@Tag(name = "考勤人员管理")
 public class UserKaoqinController {
 
     @Autowired

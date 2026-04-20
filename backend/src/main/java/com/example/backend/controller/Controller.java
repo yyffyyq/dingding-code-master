@@ -32,7 +32,7 @@ import static com.example.backend.constant.UserConstant.USER_LOGIN_STATE;
 @CrossOrigin
 @RestController
 @RequestMapping("/api")
-@Tag(name = "通用接口")
+//@Tag(name = "通用接口")
 public class Controller {
     @Value("${dingtalk.corpId}")
     private String appKey;
@@ -49,7 +49,6 @@ public class Controller {
     @Resource
     private RestTemplate restTemplate;
 
-    // ====================== 获取钉钉AccessToken（带缓存，有效期2小时） ======================
     /**
      * 获取钉钉应用级accessToken
      * 缓存有效期：7000秒（小于钉钉官方7200秒，避免过期）

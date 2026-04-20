@@ -28,7 +28,7 @@ import java.util.Map;
 @CrossOrigin
 @RestController
 @RequestMapping("/dingUser")
-@Tag(name = "钉钉用户登录功能")
+//@Tag(name = "钉钉用户登录功能")
 public class DingUserController {
 
     // === 补充缺失的属性注入（确保你能顺利编译） ===

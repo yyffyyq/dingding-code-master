@@ -2,6 +2,7 @@ package com.example.backend.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.StrUtil;
+import com.example.backend.constant.CheckResultConstant;
 import com.example.backend.exception.BusinessException;
 import com.example.backend.exception.ErrorCode;
 import com.example.backend.exception.ThrowUtils;
@@ -566,5 +567,71 @@ public class DingtalkAttendanceRecordServiceImpl extends ServiceImpl<DingtalkAtt
         return records.stream()
                 .map(this::getDingtalkAttendanceRecordVO)
                 .collect(Collectors.toList());
+    }
+
+    /**
+     * 更新is_legal 和 is_narmal 信息
+     * （ is_legal 信息为 null 的考勤信息）
+     * @return 是否更新成功状态
+     */
+    @Override
+    public boolean updateIsLegalAndIsNormal() {
+
+        // 1. 构建sql查询语句只查询所有is_legal为null的信息
+        QueryWrapper queryWrapper = QueryWrapper.create()
+                .eq(DingtalkAttendanceRecord::getIsLegal, null)
+                .eq(DingtalkAttendanceRecord::getIsDeleted, false);
+
+        // 2. 获取所有符合条件的记录，使用selectListByQuery返回完整实体对象
+        List<DingtalkAttendanceRecord> recordList = dingtalkAttendanceRecordMapper
+                .selectListByQuery(queryWrapper);
+
+        // 3. 如果没有记录需要更新，直接返回成功
+        if (CollUtil.isEmpty(recordList)) {
+            log.info("没有需要更新is_legal的记录");
+            return true;
+        }
+
+        log.info("找到 {} 条需要更新is_legal的记录", recordList.size());
+
+        // 4. 通过获取比对time_result location_result
+        boolean updateResult = updateRecord(recordList);
+
+        return updateResult;
+    }
+
+    private boolean updateRecord(List<DingtalkAttendanceRecord> recordList) {
+
+        List<DingtalkAttendanceRecord> updateList = new ArrayList<>();
+
+        // 1. 循环获取比对查询
+        for (DingtalkAttendanceRecord record : recordList) {
+            String timeResult = record.getTimeResult();
+            String locationResult = record.getLocationResult();
+
+            // 使用equals进行字符串比较
+            boolean isTimeNormal = CheckResultConstant.NORMAL.equals(timeResult);
+            boolean isLocationNormal = CheckResultConstant.NORMAL.equals(locationResult);
+
+            if (isTimeNormal || isLocationNormal) {
+                record.setIsNormal(true);
+                record.setIsLegal("Y");
+            } else {
+                record.setIsLegal("N");
+            }
+            record.setUpdateTime(LocalDateTime.now());
+            updateList.add(record);
+        }
+
+        // 2. 批量更新记录
+        if (CollUtil.isEmpty(updateList)) {
+            return true;
+        }
+
+        boolean result = dingtalkAttendanceRecordMapper.updateBatch(updateList);
+        log.info("成功更新 {} 条记录的is_legal信息", updateList.size());
+
+        // 3. 返回更新结果
+        return result;
     }
 }

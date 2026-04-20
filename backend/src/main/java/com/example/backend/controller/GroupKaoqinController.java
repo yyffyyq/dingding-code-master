@@ -43,7 +43,7 @@ import static com.example.backend.constant.CommonConstant.ACCSEE_TOKEN;
  */
 @RestController
 @RequestMapping("/groupKaoqin")
-@Tag(name = "考勤组功能部分")
+//@Tag(name = "考勤组功能部分")
 public class GroupKaoqinController {
 
     @Autowired

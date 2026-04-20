@@ -81,4 +81,11 @@ public interface DingtalkAttendanceRecordService extends IService<DingtalkAttend
      * @return 考勤记录VO列表
      */
     List<DingtalkAttendanceRecordVO> getDingtalkAttendanceRecordVOList(List<DingtalkAttendanceRecord> records);
+
+    /**
+     * 更新is_legal 和 is_narmal 信息
+     * （ is_legal 信息为 null 的考勤信息）
+     * @return 是否更新成功状态
+     */
+    boolean updateIsLegalAndIsNormal();
 }
