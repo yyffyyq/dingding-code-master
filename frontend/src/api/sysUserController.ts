@@ -17,7 +17,7 @@ export async function sysUserListpage(
   });
 }
 
-/** 更新用户权限更具系统用户id PUT /sysUser/admin/update/role */
+/** 更新系统用户权限 PUT /sysUser/admin/update/role */
 export async function update(
   body: API.SysUserUpdateQueryReqyest,
   options?: { [key: string]: any }

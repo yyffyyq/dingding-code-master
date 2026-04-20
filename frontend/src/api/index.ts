@@ -5,12 +5,14 @@
 import * as sysUserController from "./sysUserController";
 import * as userKaoqinController from "./userKaoqinController";
 import * as groupKaoqinController from "./groupKaoqinController";
+import * as dingtalkAttendanceRecordController from "./dingtalkAttendanceRecordController";
 import * as dingUserController from "./dingUserController";
 import * as controller from "./controller";
 export default {
   sysUserController,
   userKaoqinController,
   groupKaoqinController,
+  dingtalkAttendanceRecordController,
   dingUserController,
   controller,
 };

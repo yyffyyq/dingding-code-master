@@ -33,7 +33,7 @@ export async function logout(options?: { [key: string]: any }) {
   });
 }
 
-/** 此处后端没有提供注释 GET /dingUser/test */
+/** 权限校验 用于校验用户全是是否通过 GET /dingUser/test */
 export async function test(options?: { [key: string]: any }) {
   return request<string>("/dingUser/test", {
     method: "GET",

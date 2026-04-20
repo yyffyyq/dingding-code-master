@@ -11,6 +11,18 @@ declare namespace API {
     message?: string;
   };
 
+  type BaseResponseListDingtalkAttendanceRecordVO = {
+    code?: number;
+    data?: DingtalkAttendanceRecordVO[];
+    message?: string;
+  };
+
+  type BaseResponsePageDingtalkAttendanceRecordVO = {
+    code?: number;
+    data?: PageDingtalkAttendanceRecordVO;
+    message?: string;
+  };
+
   type BaseResponsePageGroupKaoqinVO = {
     code?: number;
     data?: PageGroupKaoqinVO;
@@ -41,6 +53,55 @@ declare namespace API {
     message?: string;
   };
 
+  type DingtalkAttendanceRecordQueryRequest = {
+    pageNum?: number;
+    pageSize?: number;
+    sortField?: string;
+    sortOrder?: string;
+    userId?: string;
+    groupId?: string;
+    queryDate?: string;
+    userName?: string;
+    checkType?: string;
+    timeResult?: string;
+    locationResult?: string;
+  };
+
+  type DingtalkAttendanceRecordUpdateRequest = {
+    groupId?: string;
+    checkDateFrom?: string;
+    checkDateTo?: string;
+  };
+
+  type DingtalkAttendanceRecordVO = {
+    id?: number;
+    recordId?: string;
+    userId?: string;
+    userName?: string;
+    groupId?: string;
+    workDate?: string;
+    checkType?: string;
+    userCheckTime?: string;
+    planCheckTime?: string;
+    timeResult?: string;
+    locationResult?: string;
+    isLegal?: string;
+    isNormal?: boolean;
+    sourceType?: string;
+    locationMethod?: string;
+    createTime?: string;
+    updateTime?: string;
+  };
+
+  type getAttendanceRecordsByUserIdParams = {
+    userId: string;
+    queryDate?: string;
+  };
+
+  type getMyAttendanceRecordsParams = {
+    queryDate?: string;
+  };
+
   type getUserkaoqinParams = {
     group_id: string;
   };
@@ -58,6 +119,15 @@ declare namespace API {
     groupId?: string;
     groupName?: string;
     isDeleted?: boolean;
+  };
+
+  type PageDingtalkAttendanceRecordVO = {
+    records?: DingtalkAttendanceRecordVO[];
+    pageNumber?: number;
+    pageSize?: number;
+    totalPage?: number;
+    totalRow?: number;
+    optimizeCountQuery?: boolean;
   };
 
   type PageGroupKaoqinVO = {

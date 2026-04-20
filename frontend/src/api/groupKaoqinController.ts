@@ -2,7 +2,7 @@
 /* eslint-disable */
 import request from "@/request";
 
-/** 此处后端没有提供注释 POST /groupKaoqin/get/list/groups */
+/** 考勤组分页查询 POST /groupKaoqin/get/list/groups */
 export async function getGroupList1(
   body: API.GroupKaoqinQuertRequest,
   options?: { [key: string]: any }
