@@ -190,6 +190,7 @@ declare namespace API {
   };
 
   type UserKaoqinVO = {
+    userId?: string;
     userName?: string;
     createTime?: string;
   };

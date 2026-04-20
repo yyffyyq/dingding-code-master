@@ -123,4 +123,5 @@ public class DingtalkAttendanceRecordController {
         Page<DingtalkAttendanceRecordVO> page = dingtalkAttendanceRecordService.getAttendanceRecordsByGroupId(queryRequest);
         return ResultUtils.success(page);
     }
+
 }

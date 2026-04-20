@@ -69,7 +69,7 @@ async function updateGroup(){
     const res = await getSimpleGroup();
     if (res?.data?.code === 0) {
       ElMessage.success('更新考勤组数据成功');
-      onMounted();
+      fetchGroupList();
     } else {
       ElMessage.error(res?.data?.message || '更新考勤组数据失败');
     }
