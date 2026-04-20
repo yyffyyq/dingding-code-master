@@ -152,28 +152,64 @@
     <!-- 查看单个员工考勤情况对话框 -->
     <el-dialog
       v-model="userAttendanceDialogVisible"
-      title="员工考勤详情"
-      width="800px"
+      :title="`${currentUserName} 考勤记录`"
+      width="900px"
     >
-      <div class="dialog-search">
-        <el-date-picker
-          v-model="userQueryDate"
-          type="date"
-          placeholder="选择查询日期"
-          value-format="YYYY-MM-DD"
-          style="margin-right: 10px"
-        />
-        <el-button type="primary" @click="fetchUserAttendanceDetail">查询</el-button>
+      <div class="calendar-header">
+        <span class="header-title">{{ currentCalendarMonth }} 考勤日历</span>
+        <div class="legend">
+          <div class="legend-item">
+            <span class="legend-dot normal"></span>
+            <span>正常</span>
+          </div>
+          <div class="legend-item">
+            <span class="legend-dot abnormal"></span>
+            <span>异常</span>
+          </div>
+          <div class="legend-item">
+            <span class="legend-dot no-record"></span>
+            <span>无记录</span>
+          </div>
+        </div>
       </div>
+      
+      <el-calendar v-model="userCalendarValue" v-loading="userAttendanceLoading">
+        <template #date-cell="{ data }">
+          <div
+            class="calendar-cell"
+            :class="getUserAttendanceClass(data.date)"
+            @click="handleUserDateClick(data.date)"
+          >
+            <div class="date-number">{{ data.day.split('-')[2] }}</div>
+            <div v-if="getUserAttendanceStatus(data.date)" class="attendance-status">
+              <el-tag
+                :type="getUserAttendanceStatus(data.date)?.isNormal ? 'success' : 'danger'"
+                size="small"
+                effect="dark"
+              >
+                {{ getUserAttendanceStatus(data.date)?.isNormal ? '正常' : '异常' }}
+              </el-tag>
+            </div>
+          </div>
+        </template>
+      </el-calendar>
+    </el-dialog>
+
+    <!-- 员工当日考勤详情对话框 -->
+    <el-dialog
+      v-model="userDayAttendanceDialogVisible"
+      :title="`${currentUserName} ${selectedUserDate} 考勤详情`"
+      width="700px"
+    >
+      <el-empty v-if="selectedUserDateRecords.length === 0" description="当日无考勤记录" />
       <el-table
-        :data="userAttendanceRecords"
-        v-loading="userAttendanceLoading"
+        v-else
+        :data="selectedUserDateRecords"
         border
         stripe
-        style="width: 100%; margin-top: 20px"
+        style="width: 100%"
       >
-        <el-table-column prop="workDate" label="工作日期" align="center" />
-        <el-table-column label="考勤类型" align="center">
+        <el-table-column prop="checkType" label="考勤类型" align="center">
           <template #default="scope">
             {{ formatCheckType(scope.row.checkType) }}
           </template>
@@ -198,7 +234,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { getGroupList, getUserkaoqin } from '@/api/userKaoqinController';
 import {
@@ -240,7 +276,18 @@ const userAttendanceDialogVisible = ref(false);
 const userAttendanceLoading = ref(false);
 const userAttendanceRecords = ref<API.DingtalkAttendanceRecordVO[]>([]);
 const currentUserId = ref<string>('');
-const userQueryDate = ref<string>(dayjs().format('YYYY-MM-DD'));
+const currentUserName = ref<string>('');
+const userCalendarValue = ref(new Date());
+
+// 用户当日考勤详情对话框
+const userDayAttendanceDialogVisible = ref(false);
+const selectedUserDate = ref<string>('');
+const selectedUserDateRecords = ref<API.DingtalkAttendanceRecordVO[]>([]);
+
+// 计算当前日历显示的月份
+const currentCalendarMonth = computed(() => {
+  return dayjs(userCalendarValue.value).format('YYYY年MM月');
+});
 
 // 计算默认日期范围（今天）
 const today = dayjs().format('YYYY-MM-DD');
@@ -404,7 +451,8 @@ function handleReset() {
 // 查看单个员工考勤情况
 function handleViewUserAttendance(row: API.UserKaoqinVO) {
   currentUserId.value = row.userId || '';
-  userQueryDate.value = today;
+  currentUserName.value = row.userName || '';
+  userCalendarValue.value = new Date();
   userAttendanceDialogVisible.value = true;
   fetchUserAttendanceDetail();
 }
@@ -417,8 +465,7 @@ async function fetchUserAttendanceDetail() {
   userAttendanceLoading.value = true;
   try {
     const res = await getAttendanceRecordsByUserId({
-      userId: currentUserId.value,
-      queryDate: userQueryDate.value
+      userId: currentUserId.value
     });
 
     if (res?.data?.code === 0) {
@@ -432,6 +479,44 @@ async function fetchUserAttendanceDetail() {
   } finally {
     userAttendanceLoading.value = false;
   }
+}
+
+// 获取指定日期的考勤状态
+function getUserAttendanceStatus(dateStr: string) {
+  const date = dayjs(dateStr).format('YYYY-MM-DD');
+  const records = userAttendanceRecords.value.filter(
+    record => dayjs(record.workDate).format('YYYY-MM-DD') === date
+  );
+
+  if (records.length === 0) {
+    return null;
+  }
+
+  // 如果有多条记录，只要有一条异常就显示异常
+  const hasAbnormal = records.some(record => !record.isNormal);
+  return {
+    isNormal: !hasAbnormal,
+    records
+  };
+}
+
+// 获取考勤样式类
+function getUserAttendanceClass(dateStr: string) {
+  const status = getUserAttendanceStatus(dateStr);
+  if (!status) {
+    return 'no-record';
+  }
+  return status.isNormal ? 'normal' : 'abnormal';
+}
+
+// 处理日期点击
+function handleUserDateClick(dateStr: string) {
+  selectedUserDate.value = dayjs(dateStr).format('YYYY-MM-DD');
+  const records = userAttendanceRecords.value.filter(
+    record => dayjs(record.workDate).format('YYYY-MM-DD') === selectedUserDate.value
+  );
+  selectedUserDateRecords.value = records;
+  userDayAttendanceDialogVisible.value = true;
 }
 
 // 返回上一页
@@ -546,5 +631,104 @@ onMounted(() => {
   display: flex;
   align-items: center;
   margin-bottom: 10px;
+}
+
+.calendar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.header-title {
+  font-weight: 600;
+  font-size: 16px;
+  color: #303133;
+}
+
+.legend {
+  display: flex;
+  gap: 20px;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  color: #606266;
+}
+
+.legend-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+}
+
+.legend-dot.normal {
+  background-color: #67c23a;
+}
+
+.legend-dot.abnormal {
+  background-color: #f56c6c;
+}
+
+.legend-dot.no-record {
+  background-color: #dcdfe6;
+}
+
+.calendar-cell {
+  width: 100%;
+  height: 100%;
+  padding: 4px;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: all 0.3s;
+}
+
+.calendar-cell:hover {
+  opacity: 0.8;
+}
+
+.calendar-cell.normal {
+  background-color: rgba(103, 194, 58, 0.1);
+  border: 1px solid rgba(103, 194, 58, 0.3);
+}
+
+.calendar-cell.abnormal {
+  background-color: rgba(245, 108, 108, 0.1);
+  border: 1px solid rgba(245, 108, 108, 0.3);
+}
+
+.calendar-cell.no-record {
+  background-color: transparent;
+}
+
+.date-number {
+  font-size: 14px;
+  font-weight: 500;
+  margin-bottom: 4px;
+}
+
+.attendance-status {
+  display: flex;
+  justify-content: center;
+}
+
+:deep(.el-calendar-day) {
+  padding: 4px;
+  height: 80px;
+}
+
+:deep(.el-calendar-day:hover) {
+  background-color: transparent;
+}
+
+:deep(.current) .calendar-cell.normal {
+  background-color: rgba(103, 194, 58, 0.2);
+}
+
+:deep(.current) .calendar-cell.abnormal {
+  background-color: rgba(245, 108, 108, 0.2);
 }
 </style>
