@@ -88,11 +88,11 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, watch } from 'vue';
 import dayjs from 'dayjs';
 import { ElMessage } from 'element-plus';
 import UserInfoCard from './components/UserInfoCard.vue';
-import { getMyAttendanceRecords } from '@/api/dingtalkAttendanceRecordController';
+import { getMyAttendanceList } from '@/api/dingtalkAttendanceRecordController';
 
 const calendarValue = ref(new Date());
 const attendanceRecords = ref<API.DingtalkAttendanceRecordVO[]>([]);
@@ -107,8 +107,9 @@ const selectedDateRecords = ref<API.DingtalkAttendanceRecordVO[]>([]);
 async function fetchAttendanceRecords() {
   loading.value = true;
   try {
-    const res = await getMyAttendanceRecords({
-      queryDate: dayjs().format('YYYY-MM-DD')
+    const currentMonth = dayjs(calendarValue.value).format('YYYY-MM');
+    const res = await getMyAttendanceList({
+      month: currentMonth
     });
 
     if (res?.data?.code === 0) {
@@ -123,6 +124,11 @@ async function fetchAttendanceRecords() {
     loading.value = false;
   }
 }
+
+// 监听日历月份变化，重新获取数据
+watch(calendarValue, () => {
+  fetchAttendanceRecords();
+});
 
 // 格式化考勤类型
 function formatCheckType(checkType?: string) {

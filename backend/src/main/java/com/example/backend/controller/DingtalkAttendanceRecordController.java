@@ -1,14 +1,19 @@
 package com.example.backend.controller;
 
+import cn.hutool.core.util.StrUtil;
 import com.example.backend.annotion.AuthCheck;
 import com.example.backend.common.BaseResponse;
 import com.example.backend.common.ResultUtils;
+import com.example.backend.exception.BusinessException;
 import com.example.backend.exception.ErrorCode;
 import com.example.backend.exception.ThrowUtils;
+import com.example.backend.model.dto.dingtalkAttendanceRecord.DingtalkAttendanceRecordMyInfoRequest;
 import com.example.backend.model.dto.dingtalkAttendanceRecord.DingtalkAttendanceRecordQueryRequest;
 import com.example.backend.model.dto.dingtalkAttendanceRecord.DingtalkAttendanceRecordUpdateRequest;
+import com.example.backend.model.entity.SysUser;
 import com.example.backend.model.vo.dingtalkAttendanceRecord.DingtalkAttendanceRecordVO;
 import com.example.backend.service.DingtalkAttendanceRecordService;
+import com.example.backend.service.SysUserService;
 import com.mybatisflex.core.paginate.Page;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -35,6 +40,9 @@ public class DingtalkAttendanceRecordController {
 
     @Autowired
     private DingtalkAttendanceRecordService dingtalkAttendanceRecordService;
+
+    @Autowired
+    private SysUserService sysUserService;
 
     /**
      * 【用户】获取当前用户的考勤记录
@@ -122,6 +130,51 @@ public class DingtalkAttendanceRecordController {
 
         Page<DingtalkAttendanceRecordVO> page = dingtalkAttendanceRecordService.getAttendanceRecordsByGroupId(queryRequest);
         return ResultUtils.success(page);
+    }
+
+    /**
+     * 获取个人所有考勤信息通过userid
+     * @param dingtalkAttendanceRecordMyInfoRequest 获取当前用户当月考勤信息
+     * @param request http请求
+     * @return 用户当月考勤信息
+     */
+    @PostMapping("/my/list")
+    @Operation(summary = "当前用户当月考勤情况", description = "查看当前用户考勤信息")
+    public BaseResponse<List<DingtalkAttendanceRecordVO>> getAttendanceRecordsByUserIdAndMonth(
+            @RequestBody DingtalkAttendanceRecordMyInfoRequest dingtalkAttendanceRecordMyInfoRequest,
+            HttpServletRequest request) {
+
+        // 1. 判断参数是否为空
+        ThrowUtils.throwIf(dingtalkAttendanceRecordMyInfoRequest == null, ErrorCode.PARAMS_ERROR, "请求参数不能为空");
+        ThrowUtils.throwIf(request == null, ErrorCode.PARAMS_ERROR);
+
+        // 如果没有查看用户，就是查看当前用户
+        if (dingtalkAttendanceRecordMyInfoRequest.getUserId() == null) {
+            dingtalkAttendanceRecordMyInfoRequest.setUserId(sysUserService.getLoginUser(request).getUserId());
+        }
+
+        String userId = dingtalkAttendanceRecordMyInfoRequest.getUserId();
+        String month = dingtalkAttendanceRecordMyInfoRequest.getMonth();
+
+        ThrowUtils.throwIf(StrUtil.isBlank(userId), ErrorCode.PARAMS_ERROR, "用户ID不能为空");
+        ThrowUtils.throwIf(StrUtil.isBlank(month), ErrorCode.PARAMS_ERROR, "月份不能为空");
+
+        // 2. 判断是否是当前用户（只能查看自己的考勤信息）
+        SysUser loginUser = sysUserService.getLoginUser(request);
+        ThrowUtils.throwIf(loginUser == null, ErrorCode.NOT_LOGIN_ERROR);
+
+        // 如果不是管理员，只能查看自己的考勤
+        boolean isAdmin = "admin".equals(loginUser.getUserRole());
+        if (!isAdmin && !userId.equals(loginUser.getUserId())) {
+            throw new BusinessException(ErrorCode.NO_AUTH_ERROR, "只能查看自己的考勤信息");
+        }
+
+        // 3. 通过月份查询workDate的值，并返回
+        List<DingtalkAttendanceRecordVO> records = dingtalkAttendanceRecordService
+                .getAttendanceRecordsByUserIdAndMonth(userId, month, request);
+
+        // 4. 返回封装考勤信息
+        return ResultUtils.success(records);
     }
 
 }

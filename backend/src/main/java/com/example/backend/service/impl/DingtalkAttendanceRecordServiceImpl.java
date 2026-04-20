@@ -634,4 +634,51 @@ public class DingtalkAttendanceRecordServiceImpl extends ServiceImpl<DingtalkAtt
         // 3. 返回更新结果
         return result;
     }
+
+    /**
+     * 【用户/管理员】根据用户ID和月份获取考勤记录列表
+     *
+     * @param userId  用户ID
+     * @param month   月份（格式：yyyy-MM）
+     * @param request HTTP请求
+     * @return 考勤记录列表
+     */
+    @Override
+    public List<DingtalkAttendanceRecordVO> getAttendanceRecordsByUserIdAndMonth(String userId, String month, HttpServletRequest request) {
+        // 1. 参数校验
+        ThrowUtils.throwIf(StrUtil.isBlank(userId), ErrorCode.PARAMS_ERROR, "用户ID不能为空");
+        ThrowUtils.throwIf(StrUtil.isBlank(month), ErrorCode.PARAMS_ERROR, "月份不能为空");
+
+        // 2. 解析月份，计算开始日期和结束日期
+        // 月份格式：yyyy-MM
+        String[] parts = month.split("-");
+        ThrowUtils.throwIf(parts.length != 2, ErrorCode.PARAMS_ERROR, "月份格式不正确，应为yyyy-MM");
+
+        int year = Integer.parseInt(parts[0]);
+        int monthValue = Integer.parseInt(parts[1]);
+
+        // 构建月份的开始和结束日期
+        java.time.YearMonth yearMonth = java.time.YearMonth.of(year, monthValue);
+        LocalDate startDate = yearMonth.atDay(1);
+        LocalDate endDate = yearMonth.atEndOfMonth();
+
+        log.info("查询用户 {} 的考勤记录，月份：{}，日期范围：{} 至 {}", userId, month, startDate, endDate);
+
+        // 3. 构建查询条件
+        QueryWrapper queryWrapper = QueryWrapper.create()
+                .eq(DingtalkAttendanceRecord::getUserId, userId)
+                .ge(DingtalkAttendanceRecord::getWorkDate, Date.valueOf(startDate))
+                .le(DingtalkAttendanceRecord::getWorkDate, Date.valueOf(endDate))
+                .eq(DingtalkAttendanceRecord::getIsDeleted, false)
+                .orderBy(DingtalkAttendanceRecord::getWorkDate, true)
+                .orderBy(DingtalkAttendanceRecord::getUserCheckTime, true);
+
+        // 4. 查询考勤记录
+        List<DingtalkAttendanceRecord> records = dingtalkAttendanceRecordMapper.selectListByQuery(queryWrapper);
+
+        log.info("查询到用户 {} 的考勤记录 {} 条", userId, CollUtil.size(records));
+
+        // 5. 返回封装后的VO列表
+        return getDingtalkAttendanceRecordVOList(records);
+    }
 }

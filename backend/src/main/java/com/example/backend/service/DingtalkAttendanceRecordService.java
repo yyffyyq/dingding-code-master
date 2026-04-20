@@ -88,4 +88,13 @@ public interface DingtalkAttendanceRecordService extends IService<DingtalkAttend
      * @return 是否更新成功状态
      */
     boolean updateIsLegalAndIsNormal();
+
+    /**
+     * 【用户/管理员】根据用户ID和月份获取考勤记录列表
+     * @param userId 用户ID
+     * @param month 月份（格式：yyyy-MM）
+     * @param request HTTP请求
+     * @return 考勤记录列表
+     */
+    List<DingtalkAttendanceRecordVO> getAttendanceRecordsByUserIdAndMonth(String userId, String month, HttpServletRequest request);
 }

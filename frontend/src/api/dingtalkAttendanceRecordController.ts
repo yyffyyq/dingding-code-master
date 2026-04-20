@@ -74,3 +74,21 @@ export async function getAttendanceRecordsByUserId(
     }
   );
 }
+
+/** 当前用户当月考勤情况 查看当前用户考勤信息 POST /dingtalkAttendanceRecord/my/list */
+export async function getMyAttendanceList(
+  body: API.DingtalkAttendanceRecordMyInfoRequest,
+  options?: { [key: string]: any }
+) {
+  return request<API.BaseResponseListDingtalkAttendanceRecordVO>(
+    "/dingtalkAttendanceRecord/my/list",
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      data: body,
+      ...(options || {}),
+    }
+  );
+}

@@ -67,6 +67,11 @@ declare namespace API {
     locationResult?: string;
   };
 
+  type DingtalkAttendanceRecordMyInfoRequest = {
+    userId?: string;
+    month?: string;
+  };
+
   type DingtalkAttendanceRecordUpdateRequest = {
     groupId?: string;
     checkDateFrom?: string;
