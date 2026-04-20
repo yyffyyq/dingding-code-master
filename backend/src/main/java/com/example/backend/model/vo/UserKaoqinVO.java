@@ -8,6 +8,10 @@ import java.time.LocalDateTime;
 @Data
 public class UserKaoqinVO implements Serializable {
     /**
+     * 用户id
+     */
+    private String userId;
+    /**
      * 用户名字
      */
     private String userName;
